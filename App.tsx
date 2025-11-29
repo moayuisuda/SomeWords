@@ -54,16 +54,17 @@ const App: React.FC = () => {
   const isLoading = appState === AppState.GENERATING_PROMPT || appState === AppState.GENERATING_IMAGE;
 
   return (
-    <div className="min-h-screen bg-[#1a1a1a] flex flex-col items-center justify-center p-4 font-sans overflow-x-hidden relative">
+    <div className="min-h-screen bg-[#1a1a1a] flex flex-col items-center justify-center p-2 md:p-6 font-sans overflow-x-hidden relative">
        {/* Background pattern */}
        <div className="absolute inset-0 opacity-5 pointer-events-none bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-gray-700 via-gray-900 to-black"></div>
 
       {/* --- TV UNIT --- */}
-      <div className="relative mb-8 w-full max-w-2xl aspect-[4/3] md:aspect-video bg-[#111] rounded-2xl border-[16px] border-[#2a2a2a] shadow-[0_20px_60px_rgba(0,0,0,0.8)] ring-1 ring-white/10 z-10">
+      {/* Increased max-width to 4xl and adjusted aspect ratio handling */}
+      <div className="relative mb-4 md:mb-8 w-full max-w-4xl aspect-[4/3] md:aspect-video bg-[#111] rounded-2xl border-[8px] md:border-[16px] border-[#2a2a2a] shadow-[0_20px_60px_rgba(0,0,0,0.8)] ring-1 ring-white/10 z-10 transition-all duration-300">
         
         {/* TV Branding */}
-        <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center z-20">
-             <div className="bg-[#2a2a2a] px-6 py-1 rounded-b-lg text-[#666] font-bold text-[10px] tracking-[0.3em] shadow-lg border-t border-black">
+        <div className="absolute -bottom-6 md:-bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center z-20">
+             <div className="bg-[#2a2a2a] px-4 md:px-6 py-0.5 md:py-1 rounded-b-lg text-[#666] font-bold text-[8px] md:text-[10px] tracking-[0.3em] shadow-lg border-t border-black">
                 RETRO-VISION
              </div>
         </div>
@@ -75,26 +76,39 @@ const App: React.FC = () => {
         <div className="w-full h-full relative overflow-hidden bg-[#050505] rounded-sm">
            <CRTOverlay />
            
-           <div className="absolute inset-0 flex items-center justify-center p-8">
+           <div className="absolute inset-0 flex items-center justify-center p-4 md:p-8">
               {/* STATE: IDLE */}
               {appState === AppState.IDLE && (
-                <div className="text-center animate-pulse">
-                  <h1 className="font-['Press_Start_2P'] text-3xl md:text-4xl text-yellow-400 drop-shadow-[4px_4px_0_#b91c1c] mb-6">
+                <div className="text-center animate-pulse px-4 flex flex-col items-center">
+                  <h1 className="font-['Press_Start_2P'] text-xl md:text-4xl text-yellow-400 drop-shadow-[2px_2px_0_#b91c1c] md:drop-shadow-[4px_4px_0_#b91c1c] mb-4 md:mb-6 leading-relaxed">
                     INSERT COIN
                   </h1>
-                  <p className="font-['DotGothic16'] text-green-500 text-xl tracking-wider">
+                  <p className="font-['DotGothic16'] text-green-500 text-base md:text-xl tracking-wider mb-8">
                     PLEASE ENTER DIALOGUE BELOW
                   </p>
+
+                  {/* New Controls Instructions */}
+                  <div className="border-2 border-white/20 p-2 md:p-4 bg-black/50 rounded text-center">
+                      <p className="font-['Press_Start_2P'] text-[8px] md:text-[10px] text-white mb-2 underline decoration-white/50">CONTROLS</p>
+                      <div className="grid grid-cols-1 gap-1 text-left">
+                        <p className="font-['DotGothic16'] text-xs md:text-sm text-gray-300">
+                           <span className="text-red-500 font-bold">START / A</span> : GENERATE
+                        </p>
+                        <p className="font-['DotGothic16'] text-xs md:text-sm text-gray-300">
+                           <span className="text-red-500 font-bold">SELECT / B</span> : RESET
+                        </p>
+                      </div>
+                  </div>
                 </div>
               )}
 
               {/* STATE: LOADING */}
               {isLoading && (
-                <div className="flex flex-col items-center space-y-6">
-                   <div className="font-['Press_Start_2P'] text-white text-xs md:text-sm animate-bounce">
+                <div className="flex flex-col items-center space-y-4 md:space-y-6">
+                   <div className="font-['Press_Start_2P'] text-white text-[10px] md:text-sm animate-bounce text-center leading-relaxed">
                      {appState === AppState.GENERATING_PROMPT ? "READING CARTRIDGE..." : "RENDERING GRAPHICS..."}
                    </div>
-                   <div className="w-48 h-4 border-2 border-white p-0.5">
+                   <div className="w-32 md:w-48 h-3 md:h-4 border-2 border-white p-0.5">
                       <div className="h-full bg-red-600 animate-[width_1.5s_ease-in-out_infinite]" style={{width: '100%'}}></div>
                    </div>
                 </div>
@@ -115,9 +129,9 @@ const App: React.FC = () => {
 
               {/* STATE: ERROR */}
               {appState === AppState.ERROR && (
-                <div className="text-center bg-black/80 p-6 border-2 border-red-600">
-                  <h2 className="font-['Press_Start_2P'] text-red-500 text-xl mb-4 blink">SYSTEM ERROR</h2>
-                  <p className="font-['DotGothic16'] text-white text-lg mb-6">{errorMessage}</p>
+                <div className="text-center bg-black/80 p-4 md:p-6 border-2 border-red-600 mx-4">
+                  <h2 className="font-['Press_Start_2P'] text-red-500 text-sm md:text-xl mb-2 md:mb-4 blink">SYSTEM ERROR</h2>
+                  <p className="font-['DotGothic16'] text-white text-sm md:text-lg mb-4 md:mb-6">{errorMessage}</p>
                   <RetroButton label="RESET SYSTEM" onClick={handleReset} variant="secondary" />
                 </div>
               )}
@@ -126,18 +140,18 @@ const App: React.FC = () => {
       </div>
 
       {/* --- CABLE --- */}
-      <div className="h-16 w-3 bg-[#111] shadow-[inset_0_0_5px_rgba(0,0,0,0.5)] z-0 -mt-8 relative">
+      <div className="h-8 md:h-16 w-2 md:w-3 bg-[#111] shadow-[inset_0_0_5px_rgba(0,0,0,0.5)] z-0 -mt-4 md:-mt-8 relative">
         <div className="absolute top-0 w-full h-full bg-gradient-to-r from-black via-gray-800 to-black opacity-50"></div>
       </div>
 
       {/* --- FAMICOM CONTROLLER UNIT --- */}
-      <div className="relative w-full max-w-3xl z-10 -mt-2">
+      <div className="relative w-full max-w-3xl z-10 -mt-1 md:-mt-2">
         
         {/* Main Body (Red) */}
-        <div className="bg-[#8b1f26] rounded-xl shadow-[0_30px_60px_rgba(0,0,0,0.6),inset_0_2px_3px_rgba(255,255,255,0.3)] p-2 md:p-3 border-b-8 border-[#580a10]">
+        <div className="bg-[#8b1f26] rounded-xl shadow-[0_30px_60px_rgba(0,0,0,0.6),inset_0_2px_3px_rgba(255,255,255,0.3)] p-2 md:p-3 border-b-4 md:border-b-8 border-[#580a10]">
           
           {/* Gold Faceplate */}
-          <div className="bg-[#cdad5d] w-full rounded-lg p-4 md:p-6 shadow-inner relative overflow-hidden flex flex-col md:flex-row gap-6 items-center">
+          <div className="bg-[#cdad5d] w-full rounded-lg p-3 md:p-6 shadow-inner relative overflow-hidden flex flex-col md:flex-row gap-4 md:gap-6 items-center">
             
             {/* Brushed Metal Texture */}
             <div className="absolute inset-0 opacity-20 pointer-events-none" style={{backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 2px, #000 2px, #000 3px)'}}></div>
@@ -148,7 +162,7 @@ const App: React.FC = () => {
                I CONTROLLER
             </div>
 
-            {/* Left: D-Pad (Decorative) */}
+            {/* Left: D-Pad (Decorative) - Hidden on smallest screens to save space, or scaled down */}
             <div className="shrink-0 hidden md:flex flex-col items-center justify-center mr-2">
               <div className="w-28 h-28 relative drop-shadow-xl">
                 <div className="absolute top-0 left-[34%] w-[32%] h-full bg-[#1a1a1a] rounded-[2px]"></div>
@@ -166,16 +180,16 @@ const App: React.FC = () => {
             <div className="flex-grow w-full flex flex-col items-center z-10">
                
                {/* Input "Screen" */}
-               <div className="w-full bg-[#111] p-1 rounded shadow-[0_2px_5px_rgba(255,255,255,0.2),inset_0_2px_10px_black] mb-5 border-b border-white/10 relative group">
-                  <div className="bg-[#0a0a0a] border border-[#333] rounded-sm p-3 relative overflow-hidden">
-                    <label className="absolute top-2 left-2 text-[#8b1f26] font-['Press_Start_2P'] text-[8px] md:text-[10px] opacity-70 z-10">
+               <div className="w-full bg-[#111] p-1 rounded shadow-[0_2px_5px_rgba(255,255,255,0.2),inset_0_2px_10px_black] mb-4 md:mb-5 border-b border-white/10 relative group">
+                  <div className="bg-[#0a0a0a] border border-[#333] rounded-sm p-2 md:p-3 relative overflow-hidden">
+                    <label className="absolute top-1 md:top-2 left-2 text-[#8b1f26] font-['Press_Start_2P'] text-[6px] md:text-[10px] opacity-70 z-10">
                         DIALOGUE
                     </label>
                     <textarea 
                       value={inputText}
                       onChange={(e) => setInputText(e.target.value)}
                       disabled={isLoading}
-                      className="w-full bg-transparent text-[#4ade80] font-['DotGothic16'] text-lg md:text-xl pt-6 pb-1 px-1 resize-none focus:outline-none placeholder-gray-800 uppercase leading-snug relative z-20 caret-green-500"
+                      className="w-full bg-transparent text-[#4ade80] font-['DotGothic16'] text-base md:text-xl pt-4 md:pt-6 pb-1 px-1 resize-none focus:outline-none placeholder-gray-800 uppercase leading-snug relative z-20 caret-green-500"
                       rows={2}
                       placeholder="ENTER TEXT..."
                     />
@@ -185,51 +199,63 @@ const App: React.FC = () => {
                </div>
 
                {/* Start / Select Buttons */}
-               <div className="flex gap-8">
+               <div className="flex gap-4 md:gap-8">
                   <div className="flex flex-col items-center">
                     <button 
                       onClick={handleReset}
-                      className="active:translate-y-[2px] active:shadow-none transition-all w-20 h-6 bg-[#1a1a1a] rounded-full shadow-[0_4px_0_rgba(0,0,0,0.5)] border border-white/5"
+                      className="active:translate-y-[2px] active:shadow-none transition-all w-16 md:w-20 h-4 md:h-6 bg-[#1a1a1a] rounded-full shadow-[0_4px_0_rgba(0,0,0,0.5)] border border-white/5"
                     ></button>
-                    <span className="mt-2 font-['Press_Start_2P'] text-[10px] text-[#8b1f26] font-bold tracking-widest">SELECT</span>
+                    <div className="flex flex-col items-center mt-1 md:mt-2">
+                        <span className="font-['Press_Start_2P'] text-[8px] md:text-[10px] text-[#8b1f26] font-bold tracking-widest">SELECT</span>
+                        <span className="font-['DotGothic16'] text-[8px] md:text-[10px] text-[#8b1f26] opacity-80 font-bold tracking-tight">(RESET)</span>
+                    </div>
                   </div>
                   <div className="flex flex-col items-center">
                     <button 
                       onClick={handleGenerate}
                       disabled={isLoading}
-                      className="active:translate-y-[2px] active:shadow-none transition-all w-20 h-6 bg-[#1a1a1a] rounded-full shadow-[0_4px_0_rgba(0,0,0,0.5)] border border-white/5"
+                      className="active:translate-y-[2px] active:shadow-none transition-all w-16 md:w-20 h-4 md:h-6 bg-[#1a1a1a] rounded-full shadow-[0_4px_0_rgba(0,0,0,0.5)] border border-white/5"
                     ></button>
-                    <span className="mt-2 font-['Press_Start_2P'] text-[10px] text-[#8b1f26] font-bold tracking-widest">START</span>
+                    <div className="flex flex-col items-center mt-1 md:mt-2">
+                        <span className="font-['Press_Start_2P'] text-[8px] md:text-[10px] text-[#8b1f26] font-bold tracking-widest">START</span>
+                        <span className="font-['DotGothic16'] text-[8px] md:text-[10px] text-[#8b1f26] opacity-80 font-bold tracking-tight">(GENERATE)</span>
+                    </div>
                   </div>
                </div>
             </div>
 
             {/* Right: A/B Buttons */}
-            <div className="flex gap-4 items-end pb-2 md:pb-4 ml-0 md:ml-4 justify-center md:justify-start">
+            <div className="flex gap-4 items-end pb-1 md:pb-4 ml-0 md:ml-4 justify-center md:justify-start mt-2 md:mt-0">
                {/* B Button (Reset) */}
-               <div className="flex flex-col items-center relative top-4">
+               <div className="flex flex-col items-center relative top-2 md:top-4">
                   <button 
                     onClick={handleReset}
-                    className={`w-14 h-14 md:w-16 md:h-16 rounded-full border-t border-white/20 flex items-center justify-center transition-all 
+                    className={`w-12 h-12 md:w-16 md:h-16 rounded-full border-t border-white/20 flex items-center justify-center transition-all 
                       ${isBPressed ? 'translate-y-[4px] shadow-none bg-[#66151a]' : 'shadow-[0_4px_0_#4a050a,0_8px_10px_rgba(0,0,0,0.4)] bg-[#8b1f26]'}
                     `}
                   >
                   </button>
-                  <span className="mt-3 font-['Press_Start_2P'] text-[12px] text-[#8b1f26] font-bold">B</span>
+                  <div className="flex flex-col items-center mt-2 md:mt-3">
+                    <span className="font-['Press_Start_2P'] text-[10px] md:text-[12px] text-[#8b1f26] font-bold">B</span>
+                    <span className="font-['DotGothic16'] text-[8px] md:text-[10px] text-[#8b1f26] opacity-80 font-bold -mt-0.5">(RESET)</span>
+                  </div>
                </div>
 
                {/* A Button (Generate) */}
-               <div className="flex flex-col items-center relative -top-2 md:-top-4">
+               <div className="flex flex-col items-center relative -top-1 md:-top-4">
                   <button 
                     onClick={handleGenerate}
                     disabled={isLoading}
-                    className={`w-14 h-14 md:w-16 md:h-16 rounded-full border-t border-white/20 flex items-center justify-center transition-all 
+                    className={`w-12 h-12 md:w-16 md:h-16 rounded-full border-t border-white/20 flex items-center justify-center transition-all 
                       ${isAPressed ? 'translate-y-[4px] shadow-none bg-[#66151a]' : 'shadow-[0_4px_0_#4a050a,0_8px_10px_rgba(0,0,0,0.4)] bg-[#8b1f26]'}
                       ${isLoading ? 'opacity-80 cursor-not-allowed' : ''}
                     `}
                   >
                   </button>
-                  <span className="mt-3 font-['Press_Start_2P'] text-[12px] text-[#8b1f26] font-bold">A</span>
+                  <div className="flex flex-col items-center mt-2 md:mt-3">
+                    <span className="font-['Press_Start_2P'] text-[10px] md:text-[12px] text-[#8b1f26] font-bold">A</span>
+                    <span className="font-['DotGothic16'] text-[8px] md:text-[10px] text-[#8b1f26] opacity-80 font-bold -mt-0.5">(GENERATE)</span>
+                  </div>
                </div>
             </div>
 
