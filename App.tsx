@@ -3,10 +3,12 @@ import CRTOverlay from './components/CRTOverlay';
 import DialogBox from './components/DialogBox';
 import RetroButton from './components/RetroButton';
 import { generateSceneDescription, generatePixelArtImage } from './services/geminiService';
-import { AppState, GeneratedScene } from './types';
+import { AppState, GeneratedScene, SceneStyle, SCENE_STYLES } from './types';
+import { ChevronDownIcon } from '@heroicons/react/20/solid';
 
 const App: React.FC = () => {
   const [inputText, setInputText] = useState('');
+  const [selectedStyle, setSelectedStyle] = useState<SceneStyle | 'RANDOM'>('JAPANESE_SCHOOL');
   const [appState, setAppState] = useState<AppState>(AppState.IDLE);
   const [generatedScene, setGeneratedScene] = useState<GeneratedScene | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
@@ -25,9 +27,14 @@ const App: React.FC = () => {
     setErrorMessage('');
     
     try {
-      const description = await generateSceneDescription(inputText);
+      // Resolve style if random
+      let activeStyle: SceneStyle = selectedStyle === 'RANDOM' 
+        ? SCENE_STYLES.filter(s => s.id !== 'RANDOM')[Math.floor(Math.random() * 4)].id as SceneStyle
+        : selectedStyle as SceneStyle;
+
+      const description = await generateSceneDescription(inputText, activeStyle);
       setAppState(AppState.GENERATING_IMAGE);
-      const imageUrl = await generatePixelArtImage(description);
+      const imageUrl = await generatePixelArtImage(description, activeStyle);
 
       setGeneratedScene({
         imageUrl,
@@ -40,7 +47,7 @@ const App: React.FC = () => {
       setAppState(AppState.ERROR);
       setErrorMessage(err.message || "Game Over. Check cartridge.");
     }
-  }, [inputText, appState]);
+  }, [inputText, appState, selectedStyle]);
 
   const handleReset = () => {
     setIsBPressed(true);
@@ -181,18 +188,43 @@ const App: React.FC = () => {
                
                {/* Input "Screen" */}
                <div className="w-full bg-[#111] p-1 rounded shadow-[0_2px_5px_rgba(255,255,255,0.2),inset_0_2px_10px_black] mb-4 md:mb-5 border-b border-white/10 relative group">
-                  <div className="bg-[#0a0a0a] border border-[#333] rounded-sm p-2 md:p-3 relative overflow-hidden">
-                    <label className="absolute top-1 md:top-2 left-2 text-[#8b1f26] font-['Press_Start_2P'] text-[6px] md:text-[10px] opacity-70 z-10">
-                        DIALOGUE
-                    </label>
-                    <textarea 
-                      value={inputText}
-                      onChange={(e) => setInputText(e.target.value)}
-                      disabled={isLoading}
-                      className="w-full bg-transparent text-[#4ade80] font-['DotGothic16'] text-base md:text-xl pt-4 md:pt-6 pb-1 px-1 resize-none focus:outline-none placeholder-gray-800 uppercase leading-snug relative z-20 caret-green-500"
-                      rows={2}
-                      placeholder="ENTER TEXT..."
-                    />
+                  <div className="bg-[#0a0a0a] border border-[#333] rounded-sm p-2 md:p-3 relative overflow-hidden flex flex-col gap-2">
+                    
+                    {/* Style Selector (New) */}
+                    <div className="flex justify-between items-center border-b border-[#333] pb-1 z-20">
+                      <label className="text-[#8b1f26] font-['Press_Start_2P'] text-[6px] md:text-[8px] opacity-70">
+                         GAME STYLE
+                      </label>
+                      <div className="relative">
+                        <select 
+                          value={selectedStyle}
+                          onChange={(e) => setSelectedStyle(e.target.value as SceneStyle | 'RANDOM')}
+                          className="appearance-none bg-transparent text-yellow-500 font-['DotGothic16'] text-xs md:text-sm font-bold focus:outline-none cursor-pointer pr-4 text-right"
+                        >
+                          {SCENE_STYLES.map(style => (
+                            <option key={style.id} value={style.id} className="bg-[#0a0a0a] text-yellow-500">
+                              {style.label}
+                            </option>
+                          ))}
+                        </select>
+                        <ChevronDownIcon className="w-3 h-3 text-yellow-600 absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none" />
+                      </div>
+                    </div>
+
+                    <div className="relative w-full">
+                       <label className="absolute -top-1 left-0 text-[#8b1f26] font-['Press_Start_2P'] text-[6px] md:text-[8px] opacity-70 z-10">
+                          DIALOGUE
+                       </label>
+                      <textarea 
+                        value={inputText}
+                        onChange={(e) => setInputText(e.target.value)}
+                        disabled={isLoading}
+                        className="w-full bg-transparent text-[#4ade80] font-['DotGothic16'] text-base md:text-xl pt-3 pb-1 px-0 resize-none focus:outline-none placeholder-gray-800 leading-snug relative z-20 caret-green-500"
+                        rows={2}
+                        placeholder="ENTER TEXT..."
+                      />
+                    </div>
+
                     {/* Scanline on input */}
                     <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%] opacity-20"></div>
                   </div>
