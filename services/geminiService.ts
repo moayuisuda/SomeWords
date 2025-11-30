@@ -26,7 +26,7 @@ const getStylePrompts = (style: SceneStyle) => {
     default:
       return {
         desc: 'Japanese high school, classroom, hallway, rooftop, cherry blossoms, nostalgic, sentimental.',
-        visual: 'Japanese visual novel style, school uniforms, clean lines, nostalgic atmosphere, warm sunset light, sentimental mood, cherry blossom petals.'
+        visual: 'Japanese visual novel style, school uniforms, clean lines, nostalgic atmosphere, sentimental mood, cherry blossom petals.'
       };
   }
 };
@@ -44,14 +44,17 @@ export const generateSceneDescription = async (userText: string, style: SceneSty
       Selected Style: ${style} (${styleInfo.desc})
       
       Task: Create a visual description of a video game scene that captures the *emotion* and *story* of the dialogue.
-      Don't just list objects. Focus on the mood, lighting, weather, and environmental storytelling details.
-      The scene must feel like a frozen moment in a touching story, not a generic background.
+      
+      CRITICAL - Character Inference:
+      - Analyze the dialogue to determine who is in the scene.
+      - If the text implies "we", "us", "together", a promise, or a romance (e.g., "We will meet on the moon"), you MUST describe TWO characters (e.g., a boy and a girl, two friends, etc.).
+      - If the text is a monologue or solitary thought, describe a single character.
       
       Requirements:
       - Style: 8-bit pixel art, Famicom/NES color palette.
-      - Perspective: **Strictly Top-Down 2D RPG view** (like Zelda: Link's Awakening, Final Fantasy, Pokemon, or Mother/Earthbound).
+      - Perspective: **Isometric view** (like Final Fantasy Tactics, Tactics Ogre, Solstice, or Landstalker).
       - Mood: Match the emotion of the text (e.g., lonely, hopeful, tense, cozy).
-      - Content: Describe the environment and the character's placement. Use lighting and weather to tell the story.
+      - Content: Describe the environment and the characters' placement/interaction. Use lighting and weather to tell the story.
       - IMPORTANT: Do NOT include any text bubbles or text inside the image description. The text will be added later via UI.
       - Keep it concise (under 50 words).
       
@@ -80,13 +83,13 @@ export const generatePixelArtImage = async (sceneDescription: string, style: Sce
     const finalPrompt = `
       (Pixel Art style), (NES Famicom graphics), (8-bit), (retro video game screenshot).
       ${styleInfo.visual}
-      Perspective: Top-down 2D RPG view.
+      Perspective: Isometric view.
       Scene: ${sceneDescription}.
       
       Art Direction: Cinematic composition, emotional atmosphere, storytelling environment. 
       Visuals: Extremely low resolution, macro pixels, jagged edges, aliased.
       Palette: Limited color palette (NES palette), blocky shapes, dithering.
-      Negative prompt: No anti-aliasing, no gradients, no photorealism, no 3D render, no isometric, no text, no HUD, no UI elements.
+      Negative prompt: No anti-aliasing, no gradients, no photorealism, no 3D render, no top-down view, no side scrolling, no text, no HUD, no UI elements.
     `;
 
     const response = await ai.models.generateContent({

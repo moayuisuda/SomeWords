@@ -22,7 +22,7 @@ const DialogBox: React.FC<DialogBoxProps> = ({ text }) => {
     if (!isVisible) return;
 
     setDisplayedLength(0);
-    const speed = 80; // ms per char
+    const speed = 120; // ms per char
     
     const timer = setInterval(() => {
       setDisplayedLength((prev) => {

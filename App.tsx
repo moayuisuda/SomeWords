@@ -1,10 +1,12 @@
+
 import React, { useState, useCallback, useEffect } from 'react';
 import CRTOverlay from './components/CRTOverlay';
 import DialogBox from './components/DialogBox';
 import RetroButton from './components/RetroButton';
 import { generateSceneDescription, generatePixelArtImage } from './services/geminiService';
+import { saveImage } from './utils/imageSaver';
 import { AppState, GeneratedScene, SceneStyle, SCENE_STYLES } from './types';
-import { ChevronDownIcon } from '@heroicons/react/20/solid';
+import { ChevronDownIcon, ArrowDownTrayIcon } from '@heroicons/react/20/solid';
 
 const App: React.FC = () => {
   const [inputText, setInputText] = useState('');
@@ -58,6 +60,16 @@ const App: React.FC = () => {
     setInputText('');
   };
 
+  const handleSave = (withText: boolean) => {
+    if (generatedScene) {
+      saveImage(
+        generatedScene.imageUrl, 
+        withText ? generatedScene.originalText : null, 
+        `retro_scene_${Date.now()}`
+      );
+    }
+  };
+
   const isLoading = appState === AppState.GENERATING_PROMPT || appState === AppState.GENERATING_IMAGE;
 
   return (
@@ -80,7 +92,7 @@ const App: React.FC = () => {
         <div className="absolute inset-0 rounded-lg pointer-events-none shadow-[inset_0_0_80px_rgba(0,0,0,0.8)] z-30 border border-white/5"></div>
 
         {/* Screen Content Area */}
-        <div className="w-full h-full relative overflow-hidden bg-[#050505] rounded-sm">
+        <div className="w-full h-full relative overflow-hidden bg-[#050505] rounded-sm group/screen">
            <CRTOverlay />
            
            <div className="absolute inset-0 flex items-center justify-center p-4 md:p-8">
@@ -131,6 +143,29 @@ const App: React.FC = () => {
                     style={{ imageRendering: 'pixelated' }}
                    />
                    <DialogBox text={generatedScene.originalText} />
+
+                   {/* Save Controls - visible on hover or after short delay */}
+                   <div className="absolute top-2 right-2 md:top-4 md:right-4 flex gap-2 z-50 opacity-0 group-hover/screen:opacity-100 transition-opacity duration-300">
+                      <div className="bg-black/80 border border-white/40 p-1 md:p-2 rounded flex flex-col gap-1 md:gap-2">
+                        <div className="font-['Press_Start_2P'] text-[6px] md:text-[8px] text-gray-400 text-center mb-1">SAVE TO DISK</div>
+                        <div className="flex gap-2">
+                          <button 
+                            onClick={() => handleSave(false)}
+                            className="bg-blue-900 hover:bg-blue-700 text-white font-['Press_Start_2P'] text-[6px] md:text-[8px] px-2 py-1 md:px-3 md:py-2 rounded border border-blue-500 shadow-[1px_1px_0_#000] active:translate-y-0.5 active:shadow-none"
+                            title="Save Image Only"
+                          >
+                            IMG ONLY
+                          </button>
+                          <button 
+                            onClick={() => handleSave(true)}
+                            className="bg-green-900 hover:bg-green-700 text-white font-['Press_Start_2P'] text-[6px] md:text-[8px] px-2 py-1 md:px-3 md:py-2 rounded border border-green-500 shadow-[1px_1px_0_#000] active:translate-y-0.5 active:shadow-none"
+                            title="Save With Subtitles"
+                          >
+                            WITH TEXT
+                          </button>
+                        </div>
+                      </div>
+                   </div>
                 </div>
               )}
 
