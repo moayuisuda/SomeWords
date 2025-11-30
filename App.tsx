@@ -1,12 +1,13 @@
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import CRTOverlay from './components/CRTOverlay';
 import DialogBox from './components/DialogBox';
 import RetroButton from './components/RetroButton';
 import { generateSceneDescription, generatePixelArtImage } from './services/geminiService';
 import { saveImage } from './utils/imageSaver';
-import { AppState, GeneratedScene, SceneStyle, SCENE_STYLES } from './types';
-import { ChevronDownIcon, ArrowDownTrayIcon } from '@heroicons/react/20/solid';
+import { AppState, GeneratedScene, SceneStyle, SCENE_STYLE_IDS, Language } from './types';
+import { translations } from './utils/translations';
+import { ChevronDownIcon } from '@heroicons/react/20/solid';
 
 const App: React.FC = () => {
   const [inputText, setInputText] = useState('');
@@ -14,10 +15,17 @@ const App: React.FC = () => {
   const [appState, setAppState] = useState<AppState>(AppState.IDLE);
   const [generatedScene, setGeneratedScene] = useState<GeneratedScene | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
+  const [language, setLanguage] = useState<Language>('zh');
 
   // Audio for button clicks (optional visual feedback, keeping it silent but visual)
   const [isAPressed, setIsAPressed] = useState(false);
   const [isBPressed, setIsBPressed] = useState(false);
+
+  const t = translations[language];
+
+  // Font Helper: Use "Press Start 2P" for English headers, "DotGothic16" for Chinese headers
+  const headerFont = language === 'en' ? "font-['Press_Start_2P']" : "font-['DotGothic16'] font-bold tracking-widest";
+  const pixelFont = "font-['DotGothic16']";
 
   const handleGenerate = useCallback(async () => {
     if (!inputText.trim() || appState === AppState.GENERATING_PROMPT || appState === AppState.GENERATING_IMAGE) return;
@@ -31,7 +39,7 @@ const App: React.FC = () => {
     try {
       // Resolve style if random
       let activeStyle: SceneStyle = selectedStyle === 'RANDOM' 
-        ? SCENE_STYLES.filter(s => s.id !== 'RANDOM')[Math.floor(Math.random() * 4)].id as SceneStyle
+        ? SCENE_STYLE_IDS.filter(s => s !== 'RANDOM')[Math.floor(Math.random() * 4)] as SceneStyle
         : selectedStyle as SceneStyle;
 
       const description = await generateSceneDescription(inputText, activeStyle);
@@ -70,12 +78,24 @@ const App: React.FC = () => {
     }
   };
 
+  const toggleLanguage = () => {
+    setLanguage(prev => prev === 'en' ? 'zh' : 'en');
+  };
+
   const isLoading = appState === AppState.GENERATING_PROMPT || appState === AppState.GENERATING_IMAGE;
 
   return (
     <div className="min-h-screen bg-[#1a1a1a] flex flex-col items-center justify-center p-2 md:p-6 font-sans overflow-x-hidden relative">
        {/* Background pattern */}
        <div className="absolute inset-0 opacity-5 pointer-events-none bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-gray-700 via-gray-900 to-black"></div>
+
+       {/* Language Switcher */}
+       <button 
+        onClick={toggleLanguage}
+        className="absolute top-4 right-4 z-50 bg-black/50 hover:bg-black/80 text-white/70 hover:text-white border border-white/20 px-2 py-1 rounded text-xs font-['DotGothic16']"
+       >
+         {language === 'en' ? '中文' : 'ENGLISH'}
+       </button>
 
       {/* --- TV UNIT --- */}
       {/* Increased max-width to 4xl and adjusted aspect ratio handling */}
@@ -99,22 +119,22 @@ const App: React.FC = () => {
               {/* STATE: IDLE */}
               {appState === AppState.IDLE && (
                 <div className="text-center animate-pulse px-4 flex flex-col items-center">
-                  <h1 className="font-['Press_Start_2P'] text-xl md:text-4xl text-yellow-400 drop-shadow-[2px_2px_0_#b91c1c] md:drop-shadow-[4px_4px_0_#b91c1c] mb-4 md:mb-6 leading-relaxed">
-                    INSERT COIN
+                  <h1 className={`${headerFont} text-xl md:text-4xl text-yellow-400 drop-shadow-[2px_2px_0_#b91c1c] md:drop-shadow-[4px_4px_0_#b91c1c] mb-4 md:mb-6 leading-relaxed`}>
+                    {t.insertCoin}
                   </h1>
-                  <p className="font-['DotGothic16'] text-green-500 text-base md:text-xl tracking-wider mb-8">
-                    PLEASE ENTER DIALOGUE BELOW
+                  <p className={`${pixelFont} text-green-500 text-base md:text-xl tracking-wider mb-8`}>
+                    {t.enterDialogue}
                   </p>
 
                   {/* New Controls Instructions */}
                   <div className="border-2 border-white/20 p-2 md:p-4 bg-black/50 rounded text-center">
-                      <p className="font-['Press_Start_2P'] text-[8px] md:text-[10px] text-white mb-2 underline decoration-white/50">CONTROLS</p>
+                      <p className={`${headerFont} text-[8px] md:text-[10px] text-white mb-2 underline decoration-white/50`}>{t.controls}</p>
                       <div className="grid grid-cols-1 gap-1 text-left">
-                        <p className="font-['DotGothic16'] text-xs md:text-sm text-gray-300">
-                           <span className="text-red-500 font-bold">START / A</span> : GENERATE
+                        <p className={`${pixelFont} text-xs md:text-sm text-gray-300`}>
+                           <span className="text-red-500 font-bold">START / A</span> : {t.generate}
                         </p>
-                        <p className="font-['DotGothic16'] text-xs md:text-sm text-gray-300">
-                           <span className="text-red-500 font-bold">SELECT / B</span> : RESET
+                        <p className={`${pixelFont} text-xs md:text-sm text-gray-300`}>
+                           <span className="text-red-500 font-bold">SELECT / B</span> : {t.reset}
                         </p>
                       </div>
                   </div>
@@ -124,8 +144,8 @@ const App: React.FC = () => {
               {/* STATE: LOADING */}
               {isLoading && (
                 <div className="flex flex-col items-center space-y-4 md:space-y-6">
-                   <div className="font-['Press_Start_2P'] text-white text-[10px] md:text-sm animate-bounce text-center leading-relaxed">
-                     {appState === AppState.GENERATING_PROMPT ? "READING CARTRIDGE..." : "RENDERING GRAPHICS..."}
+                   <div className={`${headerFont} text-white text-[10px] md:text-sm animate-bounce text-center leading-relaxed`}>
+                     {appState === AppState.GENERATING_PROMPT ? t.readingCartridge : t.renderingGraphics}
                    </div>
                    <div className="w-32 md:w-48 h-3 md:h-4 border-2 border-white p-0.5">
                       <div className="h-full bg-red-600 animate-[width_1.5s_ease-in-out_infinite]" style={{width: '100%'}}></div>
@@ -147,21 +167,21 @@ const App: React.FC = () => {
                    {/* Save Controls - visible on hover or after short delay */}
                    <div className="absolute top-2 right-2 md:top-4 md:right-4 flex gap-2 z-50 opacity-0 group-hover/screen:opacity-100 transition-opacity duration-300">
                       <div className="bg-black/80 border border-white/40 p-1 md:p-2 rounded flex flex-col gap-1 md:gap-2">
-                        <div className="font-['Press_Start_2P'] text-[6px] md:text-[8px] text-gray-400 text-center mb-1">SAVE TO DISK</div>
+                        <div className={`${headerFont} text-[6px] md:text-[8px] text-gray-400 text-center mb-1`}>{t.saveToDisk}</div>
                         <div className="flex gap-2">
                           <button 
                             onClick={() => handleSave(false)}
-                            className="bg-blue-900 hover:bg-blue-700 text-white font-['Press_Start_2P'] text-[6px] md:text-[8px] px-2 py-1 md:px-3 md:py-2 rounded border border-blue-500 shadow-[1px_1px_0_#000] active:translate-y-0.5 active:shadow-none"
+                            className={`bg-blue-900 hover:bg-blue-700 text-white ${headerFont} text-[6px] md:text-[8px] px-2 py-1 md:px-3 md:py-2 rounded border border-blue-500 shadow-[1px_1px_0_#000] active:translate-y-0.5 active:shadow-none`}
                             title="Save Image Only"
                           >
-                            IMG ONLY
+                            {t.imgOnly}
                           </button>
                           <button 
                             onClick={() => handleSave(true)}
-                            className="bg-green-900 hover:bg-green-700 text-white font-['Press_Start_2P'] text-[6px] md:text-[8px] px-2 py-1 md:px-3 md:py-2 rounded border border-green-500 shadow-[1px_1px_0_#000] active:translate-y-0.5 active:shadow-none"
+                            className={`bg-green-900 hover:bg-green-700 text-white ${headerFont} text-[6px] md:text-[8px] px-2 py-1 md:px-3 md:py-2 rounded border border-green-500 shadow-[1px_1px_0_#000] active:translate-y-0.5 active:shadow-none`}
                             title="Save With Subtitles"
                           >
-                            WITH TEXT
+                            {t.withText}
                           </button>
                         </div>
                       </div>
@@ -172,9 +192,9 @@ const App: React.FC = () => {
               {/* STATE: ERROR */}
               {appState === AppState.ERROR && (
                 <div className="text-center bg-black/80 p-4 md:p-6 border-2 border-red-600 mx-4">
-                  <h2 className="font-['Press_Start_2P'] text-red-500 text-sm md:text-xl mb-2 md:mb-4 blink">SYSTEM ERROR</h2>
-                  <p className="font-['DotGothic16'] text-white text-sm md:text-lg mb-4 md:mb-6">{errorMessage}</p>
-                  <RetroButton label="RESET SYSTEM" onClick={handleReset} variant="secondary" />
+                  <h2 className={`${headerFont} text-red-500 text-sm md:text-xl mb-2 md:mb-4 blink`}>{t.systemError}</h2>
+                  <p className={`${pixelFont} text-white text-sm md:text-lg mb-4 md:mb-6`}>{errorMessage}</p>
+                  <RetroButton label={t.resetSystem} onClick={handleReset} variant="secondary" fontClass={headerFont} />
                 </div>
               )}
            </div>
@@ -225,20 +245,20 @@ const App: React.FC = () => {
                <div className="w-full bg-[#111] p-1 rounded shadow-[0_2px_5px_rgba(255,255,255,0.2),inset_0_2px_10px_black] mb-4 md:mb-5 border-b border-white/10 relative group">
                   <div className="bg-[#0a0a0a] border border-[#333] rounded-sm p-2 md:p-3 relative overflow-hidden flex flex-col gap-2">
                     
-                    {/* Style Selector (New) */}
+                    {/* Style Selector */}
                     <div className="flex justify-between items-center border-b border-[#333] pb-1 z-20">
-                      <label className="text-[#8b1f26] font-['Press_Start_2P'] text-[6px] md:text-[8px] opacity-70">
-                         GAME STYLE
+                      <label className={`text-[#8b1f26] ${headerFont} text-[6px] md:text-[8px] opacity-70`}>
+                         {t.gameStyle}
                       </label>
                       <div className="relative">
                         <select 
                           value={selectedStyle}
                           onChange={(e) => setSelectedStyle(e.target.value as SceneStyle | 'RANDOM')}
-                          className="appearance-none bg-transparent text-yellow-500 font-['DotGothic16'] text-xs md:text-sm font-bold focus:outline-none cursor-pointer pr-4 text-right"
+                          className={`appearance-none bg-transparent text-yellow-500 ${pixelFont} text-xs md:text-sm font-bold focus:outline-none cursor-pointer pr-4 text-right`}
                         >
-                          {SCENE_STYLES.map(style => (
-                            <option key={style.id} value={style.id} className="bg-[#0a0a0a] text-yellow-500">
-                              {style.label}
+                          {SCENE_STYLE_IDS.map(id => (
+                            <option key={id} value={id} className="bg-[#0a0a0a] text-yellow-500">
+                              {t.styles[id]}
                             </option>
                           ))}
                         </select>
@@ -247,16 +267,16 @@ const App: React.FC = () => {
                     </div>
 
                     <div className="relative w-full">
-                       <label className="absolute -top-1 left-0 text-[#8b1f26] font-['Press_Start_2P'] text-[6px] md:text-[8px] opacity-70 z-10">
-                          DIALOGUE
+                       <label className={`absolute -top-1 left-0 text-[#8b1f26] ${headerFont} text-[6px] md:text-[8px] opacity-70 z-10`}>
+                          {t.dialogue}
                        </label>
                       <textarea 
                         value={inputText}
                         onChange={(e) => setInputText(e.target.value)}
                         disabled={isLoading}
-                        className="w-full bg-transparent text-[#4ade80] font-['DotGothic16'] text-base md:text-xl pt-3 pb-1 px-0 resize-none focus:outline-none placeholder-gray-800 leading-snug relative z-20 caret-green-500"
+                        className={`w-full bg-transparent text-[#4ade80] ${pixelFont} text-base md:text-xl pt-3 pb-1 px-0 resize-none focus:outline-none placeholder-gray-800 leading-snug relative z-20 caret-green-500`}
                         rows={2}
-                        placeholder="ENTER TEXT..."
+                        placeholder={t.enterDialogue + "..."}
                       />
                     </div>
 
@@ -273,8 +293,8 @@ const App: React.FC = () => {
                       className="active:translate-y-[2px] active:shadow-none transition-all w-16 md:w-20 h-4 md:h-6 bg-[#1a1a1a] rounded-full shadow-[0_4px_0_rgba(0,0,0,0.5)] border border-white/5"
                     ></button>
                     <div className="flex flex-col items-center mt-1 md:mt-2">
-                        <span className="font-['Press_Start_2P'] text-[8px] md:text-[10px] text-[#8b1f26] font-bold tracking-widest">SELECT</span>
-                        <span className="font-['DotGothic16'] text-[8px] md:text-[10px] text-[#8b1f26] opacity-80 font-bold tracking-tight">(RESET)</span>
+                        <span className={`text-[#8b1f26] font-bold tracking-widest text-[8px] md:text-[10px] ${headerFont}`}>{t.select}</span>
+                        <span className={`text-[#8b1f26] opacity-80 font-bold tracking-tight text-[8px] md:text-[10px] ${pixelFont}`}>({t.reset})</span>
                     </div>
                   </div>
                   <div className="flex flex-col items-center">
@@ -284,8 +304,8 @@ const App: React.FC = () => {
                       className="active:translate-y-[2px] active:shadow-none transition-all w-16 md:w-20 h-4 md:h-6 bg-[#1a1a1a] rounded-full shadow-[0_4px_0_rgba(0,0,0,0.5)] border border-white/5"
                     ></button>
                     <div className="flex flex-col items-center mt-1 md:mt-2">
-                        <span className="font-['Press_Start_2P'] text-[8px] md:text-[10px] text-[#8b1f26] font-bold tracking-widest">START</span>
-                        <span className="font-['DotGothic16'] text-[8px] md:text-[10px] text-[#8b1f26] opacity-80 font-bold tracking-tight">(GENERATE)</span>
+                        <span className={`text-[#8b1f26] font-bold tracking-widest text-[8px] md:text-[10px] ${headerFont}`}>{t.start}</span>
+                        <span className={`text-[#8b1f26] opacity-80 font-bold tracking-tight text-[8px] md:text-[10px] ${pixelFont}`}>({t.generate})</span>
                     </div>
                   </div>
                </div>
@@ -303,8 +323,8 @@ const App: React.FC = () => {
                   >
                   </button>
                   <div className="flex flex-col items-center mt-2 md:mt-3">
-                    <span className="font-['Press_Start_2P'] text-[10px] md:text-[12px] text-[#8b1f26] font-bold">B</span>
-                    <span className="font-['DotGothic16'] text-[8px] md:text-[10px] text-[#8b1f26] opacity-80 font-bold -mt-0.5">(RESET)</span>
+                    <span className={`text-[#8b1f26] font-bold text-[10px] md:text-[12px] ${headerFont}`}>B</span>
+                    <span className={`text-[#8b1f26] opacity-80 font-bold -mt-0.5 text-[8px] md:text-[10px] ${pixelFont}`}>({t.reset})</span>
                   </div>
                </div>
 
@@ -320,8 +340,8 @@ const App: React.FC = () => {
                   >
                   </button>
                   <div className="flex flex-col items-center mt-2 md:mt-3">
-                    <span className="font-['Press_Start_2P'] text-[10px] md:text-[12px] text-[#8b1f26] font-bold">A</span>
-                    <span className="font-['DotGothic16'] text-[8px] md:text-[10px] text-[#8b1f26] opacity-80 font-bold -mt-0.5">(GENERATE)</span>
+                    <span className={`text-[#8b1f26] font-bold text-[10px] md:text-[12px] ${headerFont}`}>A</span>
+                    <span className={`text-[#8b1f26] opacity-80 font-bold -mt-0.5 text-[8px] md:text-[10px] ${pixelFont}`}>({t.generate})</span>
                   </div>
                </div>
             </div>

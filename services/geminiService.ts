@@ -15,8 +15,8 @@ const getStylePrompts = (style: SceneStyle) => {
       };
     case 'MILLENNIUM_CITY':
       return {
-        desc: 'Early 2000s Asian metropolis (like Tokyo, Taipei, or Seoul). Nostalgic urban memory. Dense streets, overhead power lines against the sky, vending machines, small shops, concrete apartments with balconies, outdoor air conditioning units. Realistic everyday life, not sci-fi.',
-        visual: 'Detailed isometric pixel art, early 2000s Asian city aesthetic (Tokyo/Seoul/Taipei), PS1/PS2 era pre-rendered background style. Features: Dense urban landscape, narrow streets, tangled overhead power lines, outdoor air conditioning units on balconies, vending machines, vertical signage, convenience stores, tiled concrete building facades. Color Palette: Natural urban tones, slightly desaturated, soft daylight, early digital photography feel. Atmosphere: Nostalgic, dense but quiet, lived-in.'
+        desc: 'Early 2000s Asian metropolis (like Tokyo, Taipei, or Seoul). Nostalgic urban memory, Kairosoft simulation game style. Dense streets, overhead power lines against the sky, vending machines, small shops, concrete apartments with balconies, outdoor air conditioning units. Realistic everyday life, not sci-fi.',
+        visual: 'Detailed isometric pixel art, early 2000s Asian city aesthetic (Tokyo/Seoul/Taipei), PS1/PS2 era pre-rendered background style. Features: Dense urban landscape, narrow streets, tangled overhead power lines, outdoor air conditioning units on balconies, vending machines, vertical signage, convenience stores, tiled concrete building facades. Color Palette: Natural urban tones, slightly desaturated, soft daylight, early digital photography feel, urban grey and concrete. Atmosphere: Nostalgic, dense but quiet, lived-in, not yellow or sepia.'
       };
     case 'CASSETTE_FUTURISM':
       return {
@@ -86,6 +86,7 @@ export const generatePixelArtImage = async (sceneDescription: string, style: Sce
       ${styleInfo.visual}
       Perspective: Isometric view.
       Scene: ${sceneDescription}.
+      Composition: Center-top focus. Keep the bottom 30% of the image relatively simple or clear of important details to accommodate a dialogue box.
       
       Art Direction: Cinematic composition, emotional atmosphere, storytelling environment. 
       Visuals: Extremely low resolution, macro pixels, jagged edges, aliased.

@@ -15,10 +15,12 @@ export interface GeneratedScene {
 
 export type SceneStyle = 'JAPANESE_SCHOOL' | 'MEDIEVAL_FANTASY' | 'MILLENNIUM_CITY' | 'CASSETTE_FUTURISM';
 
-export const SCENE_STYLES: { id: SceneStyle | 'RANDOM'; label: string }[] = [
-  { id: 'JAPANESE_SCHOOL', label: '日式校园' },
-  { id: 'MEDIEVAL_FANTASY', label: '中世纪冒险' },
-  { id: 'MILLENNIUM_CITY', label: '千禧年都市' },
-  { id: 'CASSETTE_FUTURISM', label: '磁带未来主义' },
-  { id: 'RANDOM', label: '随机风格' },
+export const SCENE_STYLE_IDS: (SceneStyle | 'RANDOM')[] = [
+  'JAPANESE_SCHOOL',
+  'MEDIEVAL_FANTASY',
+  'MILLENNIUM_CITY',
+  'CASSETTE_FUTURISM',
+  'RANDOM',
 ];
+
+export type Language = 'en' | 'zh';

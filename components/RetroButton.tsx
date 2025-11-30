@@ -1,12 +1,20 @@
+
 import React from 'react';
 
 interface RetroButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'danger';
   label: string;
+  fontClass?: string;
 }
 
-const RetroButton: React.FC<RetroButtonProps> = ({ variant = 'primary', label, className = '', ...props }) => {
-  const baseClasses = "font-['Press_Start_2P'] uppercase text-xs px-4 py-2 transition-transform active:translate-y-0.5 relative border-2 border-transparent";
+const RetroButton: React.FC<RetroButtonProps> = ({ 
+  variant = 'primary', 
+  label, 
+  className = '', 
+  fontClass = "font-['Press_Start_2P']",
+  ...props 
+}) => {
+  const baseClasses = `uppercase text-xs px-4 py-2 transition-transform active:translate-y-0.5 relative border-2 border-transparent ${fontClass}`;
   
   let colorClass = '';
   switch(variant) {
