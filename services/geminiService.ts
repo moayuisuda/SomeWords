@@ -1,3 +1,4 @@
+
 import { GoogleGenAI, Type } from "@google/genai";
 import { SceneStyle } from '../types';
 
@@ -12,10 +13,10 @@ const getStylePrompts = (style: SceneStyle) => {
         desc: 'Medieval fantasy RPG, stone castles, dungeons, forests, torches, knights, magic, Dragon Quest style.',
         visual: 'Medieval fantasy aesthetic, earth tones, brick textures, medieval architecture, swords and sorcery atmosphere, flickering torchlight, mysterious shadows.'
       };
-    case 'MODERN_CITY':
+    case 'MILLENNIUM_CITY':
       return {
-        desc: 'Modern urban city, night life, street lights, concrete buildings, convenience stores, traffic, River City Ransom style.',
-        visual: 'Urban city aesthetic, neon lights against dark buildings, asphalt, modern clothing, city pop vibe, melancholic night rain, street lamps.'
+        desc: 'Early 2000s Asian metropolis (like Tokyo, Taipei, or Seoul). Nostalgic urban memory. Dense streets, overhead power lines against the sky, vending machines, small shops, concrete apartments with balconies, outdoor air conditioning units. Realistic everyday life, not sci-fi.',
+        visual: 'Detailed isometric pixel art, early 2000s Asian city aesthetic (Tokyo/Seoul/Taipei), PS1/PS2 era pre-rendered background style. Features: Dense urban landscape, narrow streets, tangled overhead power lines, outdoor air conditioning units on balconies, vending machines, vertical signage, convenience stores, tiled concrete building facades. Color Palette: Natural urban tones, slightly desaturated, soft daylight, early digital photography feel. Atmosphere: Nostalgic, dense but quiet, lived-in.'
       };
     case 'CASSETTE_FUTURISM':
       return {
