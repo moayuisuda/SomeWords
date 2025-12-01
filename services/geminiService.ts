@@ -86,7 +86,7 @@ export const generatePixelArtImage = async (sceneDescription: string, style: Sce
       ${styleInfo.visual}
       Perspective: Isometric view.
       Scene: ${sceneDescription}.
-      Composition: Center-top focus. Keep the bottom 30% of the image relatively simple or clear of important details to accommodate a dialogue box.
+      Composition: Center-top focus.
       
       Art Direction: Cinematic composition, emotional atmosphere, storytelling environment. 
       Visuals: Extremely low resolution, macro pixels, jagged edges, aliased.
