@@ -46,10 +46,11 @@ export const generateSceneDescription = async (userText: string, style: SceneSty
       
       Task: Create a visual description of a video game scene that captures the *emotion* and *story* of the dialogue.
       
-      CRITICAL - Character Inference:
-      - Analyze the dialogue to determine who is in the scene.
-      - If the text implies "we", "us", "together", a promise, or a romance (e.g., "We will meet on the moon"), you MUST describe TWO characters (e.g., a boy and a girl, two friends, etc.).
-      - If the text is a monologue or solitary thought, describe a single character.
+      CRITICAL - Character Dynamics & Interaction:
+      - Analyze the dialogue to determine the characters.
+      - IF TWO CHARACTERS ARE PRESENT: They must be **INTERACTING**, not just standing nearby.
+         - Describe specific body language (e.g., pointing, holding hands, handing an item, fighting, comforting, turning away in anger).
+      - If solitary: Describe the character engaging with the environment (looking at the sky, sitting at a desk, etc.).
       
       Requirements:
       - Style: 8-bit pixel art, Famicom/NES color palette.
@@ -75,7 +76,11 @@ export const generateSceneDescription = async (userText: string, style: SceneSty
 };
 
 // 2. Generate the image based on the description.
-export const generatePixelArtImage = async (sceneDescription: string, style: SceneStyle): Promise<string> => {
+export const generatePixelArtImage = async (
+  sceneDescription: string, 
+  style: SceneStyle,
+  aspectRatio: "16:9" | "4:3" = "16:9"
+): Promise<string> => {
   try {
     const model = 'gemini-3-pro-image-preview'; // Using the high-quality model for better pixel art adherence
     const styleInfo = getStylePrompts(style);
@@ -86,12 +91,13 @@ export const generatePixelArtImage = async (sceneDescription: string, style: Sce
       ${styleInfo.visual}
       Perspective: Isometric view.
       Scene: ${sceneDescription}.
-      Composition: Center-top focus.
+      Composition: Center-top focus. Single full screen image.
       
       Art Direction: Cinematic composition, emotional atmosphere, storytelling environment. 
+      Character Interaction: Characters must be facing each other or interacting with the environment. Avoid characters looking directly at the camera/viewer. Strong connection between subjects.
       Visuals: Extremely low resolution, macro pixels, jagged edges, aliased.
       Palette: Limited color palette (NES palette), blocky shapes, dithering.
-      Negative prompt: No anti-aliasing, no gradients, no photorealism, no 3D render, no top-down view, no side scrolling, no text, no HUD, no UI elements.
+      Negative prompt: Split screen, multiple panels, black bar, border, collage, sprite sheet, characters looking at camera, breaking the fourth wall, passport photo style, floating heads, text, HUD, UI elements, anti-aliasing, gradients, photorealism, 3D render.
     `;
 
     const response = await ai.models.generateContent({
@@ -99,7 +105,7 @@ export const generatePixelArtImage = async (sceneDescription: string, style: Sce
       contents: finalPrompt,
       config: {
         imageConfig: {
-          aspectRatio: "16:9",
+          aspectRatio: aspectRatio,
           imageSize: "1K",
         },
       },

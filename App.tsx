@@ -44,7 +44,13 @@ const App: React.FC = () => {
 
       const description = await generateSceneDescription(inputText, activeStyle);
       setAppState(AppState.GENERATING_IMAGE);
-      const imageUrl = await generatePixelArtImage(description, activeStyle);
+
+      // Determine aspect ratio based on screen width
+      // 768px matches the md: breakpoint in Tailwind
+      const isMobile = window.innerWidth < 768;
+      const aspectRatio = isMobile ? "4:3" : "16:9";
+
+      const imageUrl = await generatePixelArtImage(description, activeStyle, aspectRatio);
 
       setGeneratedScene({
         imageUrl,
