@@ -18,6 +18,9 @@ interface TranslationSet {
   saveToDisk: string;
   imgOnly: string;
   withText: string;
+  hideText: string;
+  showText: string;
+  save: string;
   styles: Record<SceneStyle | 'RANDOM', string>;
 }
 
@@ -39,6 +42,9 @@ export const translations: Record<Language, TranslationSet> = {
     saveToDisk: "SAVE TO DISK",
     imgOnly: "IMG ONLY",
     withText: "WITH TEXT",
+    hideText: "HIDE TEXT",
+    showText: "SHOW TEXT",
+    save: "SAVE",
     styles: {
       JAPANESE_SCHOOL: "Japanese School",
       MEDIEVAL_FANTASY: "Medieval Fantasy",
@@ -64,6 +70,9 @@ export const translations: Record<Language, TranslationSet> = {
     saveToDisk: "保存到磁盘",
     imgOnly: "仅图片",
     withText: "带字幕",
+    hideText: "隐藏字幕",
+    showText: "显示字幕",
+    save: "保存截图",
     styles: {
       JAPANESE_SCHOOL: "日式校园",
       MEDIEVAL_FANTASY: "中世纪冒险",

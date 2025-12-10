@@ -11,23 +11,23 @@ const getStylePrompts = (style: SceneStyle) => {
     case 'MEDIEVAL_FANTASY':
       return {
         desc: 'Medieval fantasy RPG, stone castles, dungeons, forests, torches, knights, magic, Dragon Quest style.',
-        visual: 'Medieval fantasy aesthetic, earth tones, brick textures, medieval architecture, swords and sorcery atmosphere, flickering torchlight, mysterious shadows.'
+        visual: 'Medieval fantasy RPG (Dragon Quest IV style), stone brick textures, medieval architecture, pixelated torchlight using dithering, high contrast shadows, chiptune aesthetic.'
       };
     case 'MILLENNIUM_CITY':
       return {
         desc: 'Early 2000s Asian metropolis (like Tokyo, Taipei, or Seoul). Nostalgic urban memory, Kairosoft simulation game style. Dense streets, overhead power lines against the sky, vending machines, small shops, concrete apartments with balconies, outdoor air conditioning units. Realistic everyday life, not sci-fi.',
-        visual: 'Detailed isometric pixel art, early 2000s Asian city aesthetic (Tokyo/Seoul/Taipei), PS1/PS2 era pre-rendered background style. Features: Dense urban landscape, narrow streets, tangled overhead power lines, outdoor air conditioning units on balconies, vending machines, vertical signage, convenience stores, tiled concrete building facades. Color Palette: Natural urban tones, slightly desaturated, soft daylight, early digital photography feel, urban grey and concrete. Atmosphere: Nostalgic, dense but quiet, lived-in, not yellow or sepia.'
+        visual: 'Detailed isometric pixel art, Asian city aesthetic (Tokyo/Seoul), PS1/GBA era pre-rendered background style. Features: Dense urban landscape, overhead power lines, air conditioning units, vending machines, tiled concrete. Colors: Urban greys, faded signage colors, hard edges, no blur.'
       };
     case 'CASSETTE_FUTURISM':
       return {
         desc: '80s retro-futurism, analog tech, CRT monitors, wires, industrial sci-fi, beige and orange plastics, Metal Gear/Snatcher style.',
-        visual: 'Cassette futurism aesthetic, lo-fi sci-fi, industrial pipes, computer terminals, retro tech atmosphere, cold florescent lighting, messy wires.'
+        visual: 'Cassette futurism, NES sci-fi (like Metal Gear or Snatcher), industrial pipes, green screen terminals, retro tech atmosphere, cold florescent lighting using solid colors, limited palette.'
       };
     case 'JAPANESE_SCHOOL':
     default:
       return {
         desc: 'Japanese high school, classroom, hallway, rooftop, cherry blossoms, nostalgic, sentimental.',
-        visual: 'Japanese visual novel style, school uniforms, clean lines, nostalgic atmosphere, sentimental mood, cherry blossom petals.'
+        visual: 'Japanese adventure game (AVG) background, uniforms, clean pixel lines, nostalgic atmosphere, cherry blossom petals, hard shadows.'
       };
   }
 };
@@ -35,7 +35,7 @@ const getStylePrompts = (style: SceneStyle) => {
 // 1. Expand the user's text into a visual description suitable for an NES game scene.
 export const generateSceneDescription = async (userText: string, style: SceneStyle): Promise<string> => {
   try {
-    const model = 'gemini-2.5-flash';
+    const model = 'gemini-2.5-pro';
     const styleInfo = getStylePrompts(style);
 
     const prompt = `
@@ -48,8 +48,8 @@ export const generateSceneDescription = async (userText: string, style: SceneSty
       
       CRITICAL - Character Dynamics & Interaction:
       - Analyze the dialogue to determine the characters.
-      - IF TWO CHARACTERS ARE PRESENT: They must be **INTERACTING**, not just standing nearby.
-         - Describe specific body language (e.g., pointing, holding hands, handing an item, fighting, comforting, turning away in anger).
+      - IF MULTIPLE CHARACTERS ARE PRESENT: They should be **INTERACTING**.
+         - Describe specific body language (e.g., pointing, holding hands, handing an item, comforting).
       - If solitary: Describe the character engaging with the environment (looking at the sky, sitting at a desk, etc.).
       
       Requirements:
@@ -86,18 +86,22 @@ export const generatePixelArtImage = async (
     const styleInfo = getStylePrompts(style);
     
     // We append specific style markers to ensure the look is correct
+    // Optimized for authentic NES/FC feel, avoiding "AI smoothing"
     const finalPrompt = `
-      (Pixel Art style), (NES Famicom graphics), (8-bit), (retro video game screenshot).
-      ${styleInfo.visual}
-      Perspective: Isometric view.
-      Scene: ${sceneDescription}.
-      Composition: Center-top focus. Single full screen image.
+      Create an authentic 8-bit NES/Famicom video game screenshot.
       
-      Art Direction: Cinematic composition, emotional atmosphere, storytelling environment. 
-      Character Interaction: Characters must be facing each other or interacting with the environment. Avoid characters looking directly at the camera/viewer. Strong connection between subjects.
-      Visuals: Extremely low resolution, macro pixels, jagged edges, aliased.
-      Palette: Limited color palette (NES palette), blocky shapes, dithering.
-      Negative prompt: Split screen, multiple panels, black bar, border, collage, sprite sheet, characters looking at camera, breaking the fourth wall, passport photo style, floating heads, text, HUD, UI elements, anti-aliasing, gradients, photorealism, 3D render.
+      Scene Context: ${sceneDescription}
+      Style Specifics: ${styleInfo.visual}
+      
+      VISUAL RULES (STRICTLY ENFORCE):
+      1. HARDWARE LIMITATIONS: Simulate the NES 54-color palette limitation. Use high contrast.
+      2. PIXELATION: The image must look like it was drawn pixel-by-pixel. MACRO PIXELS.
+      3. SHADING: Use DITHERING (checkerboard patterns) for shading. DO NOT use gradients, soft light, or bloom.
+      4. EDGES: Hard, aliased edges only. NO anti-aliasing.
+      5. VIEWPOINT: Isometric or classic side-scroller perspective depending on context, but prefer Isometric 2.5D.
+      
+      Negative Prompt:
+      Vector art, smooth lines, anti-aliasing, blur, bloom, glow effects, modern indie game style, high resolution details, photorealism, 3D rendering, gradients, soft shadows, oil painting, watercolor, text, UI overlay, glitch, noise, chromatic aberration.
     `;
 
     const response = await ai.models.generateContent({

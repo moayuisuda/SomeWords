@@ -7,7 +7,7 @@ import { generateSceneDescription, generatePixelArtImage } from './services/gemi
 import { saveImage } from './utils/imageSaver';
 import { AppState, GeneratedScene, SceneStyle, SCENE_STYLE_IDS, Language } from './types';
 import { translations } from './utils/translations';
-import { ChevronDownIcon } from '@heroicons/react/20/solid';
+import { ChevronDownIcon, EyeIcon, EyeSlashIcon, CameraIcon } from '@heroicons/react/20/solid';
 
 const App: React.FC = () => {
   const [inputText, setInputText] = useState('');
@@ -16,6 +16,7 @@ const App: React.FC = () => {
   const [generatedScene, setGeneratedScene] = useState<GeneratedScene | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [language, setLanguage] = useState<Language>('zh');
+  const [showSubtitles, setShowSubtitles] = useState(true);
 
   // Audio for button clicks (optional visual feedback, keeping it silent but visual)
   const [isAPressed, setIsAPressed] = useState(false);
@@ -35,6 +36,7 @@ const App: React.FC = () => {
 
     setAppState(AppState.GENERATING_PROMPT);
     setErrorMessage('');
+    setShowSubtitles(true); // Reset subtitles to visible on new generation
     
     try {
       // Resolve style if random
@@ -74,11 +76,12 @@ const App: React.FC = () => {
     setInputText('');
   };
 
-  const handleSave = (withText: boolean) => {
+  const handleSave = () => {
     if (generatedScene) {
+      // If subtitles are hidden, pass null as text to save only the image
       saveImage(
         generatedScene.imageUrl, 
-        withText ? generatedScene.originalText : null, 
+        showSubtitles ? generatedScene.originalText : null, 
         `retro_scene_${Date.now()}`
       );
     }
@@ -95,13 +98,40 @@ const App: React.FC = () => {
        {/* Background pattern */}
        <div className="absolute inset-0 opacity-5 pointer-events-none bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-gray-700 via-gray-900 to-black"></div>
 
-       {/* Language Switcher */}
-       <button 
-        onClick={toggleLanguage}
-        className="absolute top-4 right-4 z-50 bg-black/50 hover:bg-black/80 text-white/70 hover:text-white border border-white/20 px-2 py-1 rounded text-xs font-['DotGothic16']"
-       >
-         {language === 'en' ? '中文' : 'ENGLISH'}
-       </button>
+       {/* Top Right Control Bar */}
+       <div className="absolute top-4 right-4 z-50 flex items-center gap-3">
+         {/* Scene Controls - Only visible when a scene is generated */}
+         {appState === AppState.COMPLETE && (
+           <>
+             <button 
+               onClick={() => setShowSubtitles(!showSubtitles)}
+               className="bg-black/50 hover:bg-black/80 text-white/70 hover:text-white border border-white/20 p-2 rounded transition-colors"
+               title={showSubtitles ? t.hideText : t.showText}
+             >
+               {showSubtitles ? <EyeIcon className="w-5 h-5" /> : <EyeSlashIcon className="w-5 h-5" />}
+             </button>
+             
+             <button 
+               onClick={handleSave}
+               className="bg-black/50 hover:bg-black/80 text-white/70 hover:text-white border border-white/20 p-2 rounded transition-colors"
+               title={t.save}
+             >
+               <CameraIcon className="w-5 h-5" />
+             </button>
+             
+             {/* Divider */}
+             <div className="w-px h-6 bg-white/20 mx-1"></div>
+           </>
+         )}
+
+         {/* Language Switcher */}
+         <button 
+          onClick={toggleLanguage}
+          className="bg-black/50 hover:bg-black/80 text-white/70 hover:text-white border border-white/20 px-3 py-1.5 rounded text-xs font-['DotGothic16'] h-full tracking-wider"
+         >
+           {language === 'en' ? 'ENGLISH' : '中文'}
+         </button>
+       </div>
 
       {/* --- TV UNIT --- */}
       {/* Increased max-width to 4xl and adjusted aspect ratio handling */}
@@ -168,29 +198,10 @@ const App: React.FC = () => {
                     className="w-full h-full object-cover rendering-pixelated"
                     style={{ imageRendering: 'pixelated' }}
                    />
-                   <DialogBox text={generatedScene.originalText} />
-
-                   {/* Save Controls - visible on hover or after short delay */}
-                   <div className="absolute top-2 right-2 md:top-4 md:right-4 flex gap-2 z-50 opacity-0 group-hover/screen:opacity-100 transition-opacity duration-300">
-                      <div className="bg-black/80 border border-white/40 p-1 md:p-2 rounded flex flex-col gap-1 md:gap-2">
-                        <div className={`${headerFont} text-[6px] md:text-[8px] text-gray-400 text-center mb-1`}>{t.saveToDisk}</div>
-                        <div className="flex gap-2">
-                          <button 
-                            onClick={() => handleSave(false)}
-                            className={`bg-blue-900 hover:bg-blue-700 text-white ${headerFont} text-[6px] md:text-[8px] px-2 py-1 md:px-3 md:py-2 rounded border border-blue-500 shadow-[1px_1px_0_#000] active:translate-y-0.5 active:shadow-none`}
-                            title="Save Image Only"
-                          >
-                            {t.imgOnly}
-                          </button>
-                          <button 
-                            onClick={() => handleSave(true)}
-                            className={`bg-green-900 hover:bg-green-700 text-white ${headerFont} text-[6px] md:text-[8px] px-2 py-1 md:px-3 md:py-2 rounded border border-green-500 shadow-[1px_1px_0_#000] active:translate-y-0.5 active:shadow-none`}
-                            title="Save With Subtitles"
-                          >
-                            {t.withText}
-                          </button>
-                        </div>
-                      </div>
+                   
+                   {/* Subtitle Layer - Visibility controlled by state */}
+                   <div style={{ visibility: showSubtitles ? 'visible' : 'hidden' }}>
+                      <DialogBox text={generatedScene.originalText} />
                    </div>
                 </div>
               )}
