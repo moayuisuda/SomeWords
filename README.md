@@ -1,20 +1,15 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# 💬 SomeWords
 
-# Run and deploy your AI Studio app
+### 8-bit NES/Famicom video game convsersation simulator.
 
-This contains everything you need to run your app locally.
+<img src="/public/image.png" width="300px">
 
-View your app in AI Studio: https://ai.studio/apps/drive/1vtxw5OZqVl4m9n1N7vKl6bq2m9xuCHvN
+## Run the App
 
-## Run Locally
+1. Install dependencies: `npm install`
+2. Set `GEMINI_API_KEY` in [.env.local](.env.local)，get in [Google AI Studio](https://aistudio.google.com/app/apikey)
+3. Run the app: `npm run dev`
 
-**Prerequisites:**  Node.js
+## Tips
 
-
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+- generated images are stored in `public/generated` directory

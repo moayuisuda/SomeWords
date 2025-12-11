@@ -1,11 +1,10 @@
+import { GoogleGenAI } from "@google/genai";
+import { NextResponse } from "next/server";
+import { SceneStyle } from "../../../types";
 
-import { GoogleGenAI, Type } from "@google/genai";
-import { SceneStyle } from '../types';
-
-const apiKey = process.env.API_KEY || '';
+const apiKey = process.env.GEMINI_API_KEY || '';
 const ai = new GoogleGenAI({ apiKey });
 
-// Helper to get style-specific prompt details
 const getStylePrompts = (style: SceneStyle) => {
   switch (style) {
     case 'MEDIEVAL_FANTASY':
@@ -32,10 +31,16 @@ const getStylePrompts = (style: SceneStyle) => {
   }
 };
 
-// 1. Expand the user's text into a visual description suitable for an NES game scene.
-export const generateSceneDescription = async (userText: string, style: SceneStyle): Promise<string> => {
+export async function POST(request: Request) {
   try {
+    const { userText, style } = await request.json();
+
+    if (!apiKey) {
+      return NextResponse.json({ error: 'API key not configured' }, { status: 500 });
+    }
+
     const model = 'gemini-2.5-pro';
+    
     const styleInfo = getStylePrompts(style);
 
     const prompt = `
@@ -68,63 +73,11 @@ export const generateSceneDescription = async (userText: string, style: SceneSty
       contents: prompt,
     });
 
-    return response.text || "A generic 8-bit pixel art background.";
-  } catch (error) {
+    const description = response.text || "A generic 8-bit pixel art background.";
+    return NextResponse.json({ description });
+
+  } catch (error: any) {
     console.error("Error generating scene description:", error);
-    throw new Error("Failed to interpret the text.");
+    return NextResponse.json({ error: error.message || "Failed to interpret the text." }, { status: 500 });
   }
-};
-
-// 2. Generate the image based on the description.
-export const generatePixelArtImage = async (
-  sceneDescription: string, 
-  style: SceneStyle,
-  aspectRatio: "16:9" | "4:3" = "16:9"
-): Promise<string> => {
-  try {
-    const model = 'gemini-3-pro-image-preview'; // Using the high-quality model for better pixel art adherence
-    const styleInfo = getStylePrompts(style);
-    
-    // We append specific style markers to ensure the look is correct
-    // Optimized for authentic NES/FC feel, avoiding "AI smoothing"
-    const finalPrompt = `
-      Create an authentic 8-bit NES/Famicom video game screenshot.
-      
-      Scene Context: ${sceneDescription}
-      Style Specifics: ${styleInfo.visual}
-      
-      VISUAL RULES (STRICTLY ENFORCE):
-      1. HARDWARE LIMITATIONS: Simulate the NES 54-color palette limitation. Use high contrast.
-      2. PIXELATION: The image must look like it was drawn pixel-by-pixel. MACRO PIXELS.
-      3. SHADING: Use DITHERING (checkerboard patterns) for shading. DO NOT use gradients, soft light, or bloom.
-      4. EDGES: Hard, aliased edges only. NO anti-aliasing.
-      5. VIEWPOINT: Isometric or classic side-scroller perspective depending on context, but prefer Isometric 2.5D.
-      
-      Negative Prompt:
-      Vector art, smooth lines, anti-aliasing, blur, bloom, glow effects, modern indie game style, high resolution details, photorealism, 3D rendering, gradients, soft shadows, oil painting, watercolor, text, UI overlay, glitch, noise, chromatic aberration.
-    `;
-
-    const response = await ai.models.generateContent({
-      model,
-      contents: finalPrompt,
-      config: {
-        imageConfig: {
-          aspectRatio: aspectRatio,
-          imageSize: "1K",
-        },
-      },
-    });
-
-    // Extract image
-    for (const part of response.candidates?.[0]?.content?.parts || []) {
-      if (part.inlineData) {
-        return `data:image/png;base64,${part.inlineData.data}`;
-      }
-    }
-    
-    throw new Error("No image data found in response.");
-  } catch (error) {
-    console.error("Error generating image:", error);
-    throw new Error("Failed to generate the pixel art.");
-  }
-};
+}

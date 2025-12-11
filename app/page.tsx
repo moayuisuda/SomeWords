@@ -1,12 +1,12 @@
+"use client";
 
 import React, { useState, useCallback } from 'react';
-import CRTOverlay from './components/CRTOverlay';
-import DialogBox from './components/DialogBox';
-import RetroButton from './components/RetroButton';
-import { generateSceneDescription, generatePixelArtImage } from './services/geminiService';
-import { saveImage } from './utils/imageSaver';
-import { AppState, GeneratedScene, SceneStyle, SCENE_STYLE_IDS, Language } from './types';
-import { translations } from './utils/translations';
+import CRTOverlay from '../components/CRTOverlay';
+import DialogBox from '../components/DialogBox';
+import RetroButton from '../components/RetroButton';
+import { saveImage } from '../utils/imageSaver';
+import { AppState, GeneratedScene, SceneStyle, SCENE_STYLE_IDS, Language } from '../types';
+import { translations } from '../utils/translations';
 import { ChevronDownIcon, EyeIcon, EyeSlashIcon, CameraIcon } from '@heroicons/react/20/solid';
 
 const App: React.FC = () => {
@@ -15,7 +15,7 @@ const App: React.FC = () => {
   const [appState, setAppState] = useState<AppState>(AppState.IDLE);
   const [generatedScene, setGeneratedScene] = useState<GeneratedScene | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
-  const [language, setLanguage] = useState<Language>('zh');
+  const [language, setLanguage] = useState<Language>('en');
   const [showSubtitles, setShowSubtitles] = useState(true);
 
   // Audio for button clicks (optional visual feedback, keeping it silent but visual)
@@ -44,7 +44,20 @@ const App: React.FC = () => {
         ? SCENE_STYLE_IDS.filter(s => s !== 'RANDOM')[Math.floor(Math.random() * 4)] as SceneStyle
         : selectedStyle as SceneStyle;
 
-      const description = await generateSceneDescription(inputText, activeStyle);
+      // Call API for description
+      const descResponse = await fetch('/api/generate-description', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userText: inputText, style: activeStyle }),
+      });
+      
+      if (!descResponse.ok) {
+          const err = await descResponse.json();
+          throw new Error(err.error || "Failed to generate description");
+      }
+      
+      const { description } = await descResponse.json();
+
       setAppState(AppState.GENERATING_IMAGE);
 
       // Determine aspect ratio based on screen width
@@ -52,7 +65,19 @@ const App: React.FC = () => {
       const isMobile = window.innerWidth < 768;
       const aspectRatio = isMobile ? "4:3" : "16:9";
 
-      const imageUrl = await generatePixelArtImage(description, activeStyle, aspectRatio);
+      // Call API for image
+      const imgResponse = await fetch('/api/generate-image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sceneDescription: description, style: activeStyle, aspectRatio }),
+      });
+
+      if (!imgResponse.ok) {
+          const err = await imgResponse.json();
+          throw new Error(err.error || "Failed to generate image");
+      }
+
+      const { imageUrl } = await imgResponse.json();
 
       setGeneratedScene({
         imageUrl,
