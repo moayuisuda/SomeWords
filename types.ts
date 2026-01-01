@@ -24,3 +24,5 @@ export const SCENE_STYLE_IDS: (SceneStyle | 'RANDOM')[] = [
 ];
 
 export type Language = 'en' | 'zh';
+
+export type SubtitleType = 'HORIZONTAL' | 'VERTICAL_LEFT' | 'HORIZONTAL_NO_BG' | 'VERTICAL_LEFT_NO_BG';

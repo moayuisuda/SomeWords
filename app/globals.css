@@ -8,7 +8,7 @@
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: 'DotGothic16', sans-serif;
+  font-family: "DotGothic16", sans-serif;
   margin: 0;
 }
 
@@ -22,4 +22,82 @@ body {
 ::-webkit-scrollbar-thumb {
   background: #555;
   border: 2px solid #000;
+}
+
+/* Retro CRT Glow Effect for main-content */
+@keyframes flicker {
+  0% {
+    opacity: 0.98;
+  }
+  5% {
+    opacity: 1;
+  }
+  10% {
+    opacity: 0.99;
+  }
+  15% {
+    opacity: 1;
+  }
+  20% {
+    opacity: 0.99;
+  }
+  50% {
+    opacity: 1;
+  }
+  55% {
+    opacity: 0.99;
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes flicker-overlay {
+  0% {
+    opacity: 0.08;
+  }
+  5% {
+    opacity: 0.1;
+  }
+  10% {
+    opacity: 0.09;
+  }
+  15% {
+    opacity: 0.1;
+  }
+  20% {
+    opacity: 0.09;
+  }
+  50% {
+    opacity: 0.1;
+  }
+  55% {
+    opacity: 0.09;
+  }
+  60% {
+    opacity: 0.1;
+  }
+  100% {
+    opacity: 0.1;
+  }
+}
+
+@keyframes waiting {
+  0%   { opacity: 0; }
+  50%  { opacity: .8; }
+  100% { opacity: 0; }
+}
+
+.animate-waiting {
+  animation: waiting 1.5s step-end infinite;
+}
+
+.main-content {
+  position: relative;
+  /* Base glow with slight blue tint for CRT feel */
+  /* filter: drop-shadow(0 0 6px rgba(200, 220, 255, 0.3)) drop-shadow(0 0 12px rgba(200, 220, 255, 0.2)) brightness(1.1) contrast(1.1); */
+  animation: flicker 0.15s infinite;
 }

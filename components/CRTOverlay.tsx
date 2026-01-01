@@ -1,23 +1,28 @@
-import React from 'react';
+import React from "react";
+import { SubtitleType } from "../types";
+import DialogBox from "./DialogBox";
 
-const CRTOverlay: React.FC = () => {
+interface CRTOverlayProps {
+  dialogText?: string;
+  subtitleType?: SubtitleType;
+}
+
+const CRTOverlay: React.FC<CRTOverlayProps> = ({
+  dialogText,
+  subtitleType = "HORIZONTAL",
+}) => {
   return (
-    <div className="pointer-events-none absolute inset-0 z-50 overflow-hidden rounded-lg">
+    <div>
       {/* Scanlines */}
-      <div 
-        className="absolute inset-0 opacity-10"
-        style={{
-          background: 'linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06))',
-          backgroundSize: '100% 2px, 3px 100%',
-        }}
-      />
-      {/* Vignette */}
-      <div 
-        className="absolute inset-0"
-        style={{
-          background: 'radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,0.4) 100%)'
-        }}
-      />
+      <div className="absolute z-20 inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%] pointer-events-none"></div>
+
+      {/* Slight Flicker/Noise */}
+
+      {/* Dialog Box (if text is present) */}
+      {dialogText && <DialogBox text={dialogText} type={subtitleType} />}
+
+      <div className="absolute z-20 inset-0 bg-white animate-[flicker-overlay_0.2s_infinite] pointer-events-none mix-blend-screen"></div>
+      <div className="absolute inset-0 pointer-events-none shadow-[inset_0_0_80px_rgba(0,0,0,0.8)] z-30"></div>
     </div>
   );
 };

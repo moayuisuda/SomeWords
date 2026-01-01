@@ -21,6 +21,10 @@ interface TranslationSet {
   hideText: string;
   showText: string;
   save: string;
+  horizontalText: string;
+  verticalText: string;
+  horizontalNoBg: string;
+  verticalNoBg: string;
   styles: Record<SceneStyle | 'RANDOM', string>;
 }
 
@@ -45,6 +49,10 @@ export const translations: Record<Language, TranslationSet> = {
     hideText: "HIDE TEXT",
     showText: "SHOW TEXT",
     save: "SAVE",
+    horizontalText: "Horizontal Text",
+    verticalText: "Vertical Text",
+    horizontalNoBg: "Horizontal (No BG)",
+    verticalNoBg: "Vertical (No BG)",
     styles: {
       JAPANESE_SCHOOL: "Japanese School",
       MEDIEVAL_FANTASY: "Medieval Fantasy",
@@ -73,6 +81,10 @@ export const translations: Record<Language, TranslationSet> = {
     hideText: "隐藏字幕",
     showText: "显示字幕",
     save: "保存截图",
+    horizontalText: "横向字幕",
+    verticalText: "竖向字幕",
+    horizontalNoBg: "横向字幕 (无背景)",
+    verticalNoBg: "竖向字幕 (无背景)",
     styles: {
       JAPANESE_SCHOOL: "日式校园",
       MEDIEVAL_FANTASY: "中世纪冒险",

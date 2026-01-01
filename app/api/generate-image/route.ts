@@ -59,6 +59,7 @@ export async function POST(request: Request) {
       3. SHADING: Use DITHERING (checkerboard patterns) for shading. DO NOT use gradients, soft light, or bloom.
       4. EDGES: Hard, aliased edges only. NO anti-aliasing.
       5. VIEWPOINT: Isometric or classic side-scroller perspective depending on context, but prefer Isometric 2.5D.
+      6. NO TEXT: The image must contain NO text, labels, or HUD elements.
       
       Negative Prompt:
       Vector art, smooth lines, anti-aliasing, blur, bloom, glow effects, modern indie game style, high resolution details, photorealism, 3D rendering, gradients, soft shadows, oil painting, watercolor, text, UI overlay, glitch, noise, chromatic aberration.
