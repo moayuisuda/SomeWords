@@ -174,7 +174,7 @@ const App: React.FC = () => {
       {/* Top Right Control Bar */}
       <div className="absolute top-4 right-4 z-50 flex items-center gap-3">
         {/* Credits Display */}
-        <div className="hidden md:flex items-center gap-2 mr-2">
+        {/* <div className="hidden md:flex items-center gap-2 mr-2">
           <span className={`text-white/60 text-[10px] md:text-xs ${pixelFont}`}>
             {t.remainingCredits}
           </span>
@@ -188,7 +188,7 @@ const App: React.FC = () => {
               />
             ))}
           </div>
-        </div>
+        </div> */}
 
         {/* Scene Controls - Only visible when a scene is generated */}
         {showSubtitles && (
