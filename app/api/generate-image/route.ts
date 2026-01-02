@@ -10,23 +10,23 @@ const getStylePrompts = (style: SceneStyle) => {
     case 'MEDIEVAL_FANTASY':
       return {
         desc: 'Medieval fantasy RPG, stone castles, dungeons, forests, torches, knights, magic, Dragon Quest style.',
-        visual: 'Medieval fantasy RPG (Dragon Quest IV style), stone brick textures, medieval architecture, pixelated torchlight using dithering, high contrast shadows, chiptune aesthetic.'
+        visual: 'Isometric medieval fantasy RPG (Tactics Ogre style), stone brick textures, medieval architecture, pixelated torchlight using dithering, high contrast shadows, chiptune aesthetic.'
       };
     case 'MILLENNIUM_CITY':
       return {
         desc: 'Early 2000s Asian metropolis (like Tokyo, Taipei, or Seoul). Nostalgic urban memory, Kairosoft simulation game style. Dense streets, overhead power lines against the sky, vending machines, small shops, concrete apartments with balconies, outdoor air conditioning units. Realistic everyday life, not sci-fi.',
-        visual: 'Detailed isometric pixel art, Asian city aesthetic (Tokyo/Seoul), PS1/GBA era pre-rendered background style. Features: Dense urban landscape, overhead power lines, air conditioning units, vending machines, tiled concrete. Colors: Urban greys, faded signage colors, hard edges, no blur.'
+        visual: 'Detailed isometric pixel art, Asian city aesthetic (Tokyo/Seoul), PS1/GBA era Strategy RPG style. Features: Dense urban landscape, overhead power lines, air conditioning units, vending machines, tiled concrete. Colors: Urban greys, faded signage colors, hard edges, no blur.'
       };
     case 'CASSETTE_FUTURISM':
       return {
         desc: '80s retro-futurism, analog tech, CRT monitors, wires, industrial sci-fi, beige and orange plastics, Metal Gear/Snatcher style.',
-        visual: 'Cassette futurism, NES sci-fi (like Metal Gear or Snatcher), industrial pipes, green screen terminals, retro tech atmosphere, cold florescent lighting using solid colors, limited palette.'
+        visual: 'Top-down cassette futurism, NES sci-fi (like Metal Gear), industrial pipes, green screen terminals, retro tech atmosphere, cold florescent lighting using solid colors, limited palette.'
       };
     case 'JAPANESE_SCHOOL':
     default:
       return {
         desc: 'Japanese high school, classroom, hallway, rooftop, cherry blossoms, nostalgic, sentimental.',
-        visual: 'Japanese adventure game (AVG) background, uniforms, clean pixel lines, nostalgic atmosphere, cherry blossom petals, hard shadows.'
+        visual: 'Isometric RPG school setting, Japanese high school aesthetic, clean pixel lines, nostalgic atmosphere, cherry blossom petals, hard shadows.'
       };
   }
 };
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
     // We append specific style markers to ensure the look is correct
     // Optimized for authentic NES/FC feel, avoiding "AI smoothing"
     const finalPrompt = `
-      Create an authentic 8-bit NES/Famicom video game screenshot.
+      Create an authentic 8-bit NES/Famicom video game screenshot in a Top-down perspective.
       
       Scene Context: ${sceneDescription}
       Style Specifics: ${styleInfo.visual}
@@ -56,11 +56,11 @@ export async function POST(request: Request) {
       2. PIXELATION: The image must look like it was drawn pixel-by-pixel. MACRO PIXELS.
       3. SHADING: Use DITHERING (checkerboard patterns) for shading. DO NOT use gradients, soft light, or bloom.
       4. EDGES: Hard, aliased edges only. NO anti-aliasing.
-      5. VIEWPOINT: Isometric or classic side-scroller perspective depending on context, but prefer Isometric 2.5D.
+      5. VIEWPOINT: STRICTLY Top-down view (bird's-eye view), similar to classic 2D RPGs (e.g., The Legend of Zelda, Pokémon, Stardew Valley). Flat 2D plane. NO isometric depth, NO side-scroller.
       6. NO TEXT: The image must contain NO text, labels, or HUD elements.
       
       Negative Prompt:
-      Vector art, smooth lines, anti-aliasing, blur, bloom, glow effects, modern indie game style, high resolution details, photorealism, 3D rendering, gradients, soft shadows, oil painting, watercolor, text, UI overlay, glitch, noise, chromatic aberration.
+      Isometric, side view, platformer view, perspective depth, vector art, smooth lines, anti-aliasing, blur, bloom, glow effects, modern indie game style, high resolution details, photorealism, 3D rendering, gradients, soft shadows, oil painting, watercolor, text, UI overlay, glitch, noise, chromatic aberration.
     `;
 
     const response = await ai.models.generateContent({
