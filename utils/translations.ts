@@ -25,6 +25,8 @@ interface TranslationSet {
   verticalText: string;
   horizontalNoBg: string;
   verticalNoBg: string;
+  dailyLimitReached: string;
+  remainingCredits: string;
   styles: Record<SceneStyle | 'RANDOM', string>;
 }
 
@@ -53,6 +55,8 @@ export const translations: Record<Language, TranslationSet> = {
     verticalText: "Vertical Text",
     horizontalNoBg: "Horizontal (No BG)",
     verticalNoBg: "Vertical (No BG)",
+    dailyLimitReached: "DAILY LIMIT REACHED (3/3)",
+    remainingCredits: "CREDITS:",
     styles: {
       JAPANESE_SCHOOL: "Japanese School",
       MEDIEVAL_FANTASY: "Medieval Fantasy",
@@ -85,6 +89,8 @@ export const translations: Record<Language, TranslationSet> = {
     verticalText: "竖向字幕",
     horizontalNoBg: "横向字幕 (无背景)",
     verticalNoBg: "竖向字幕 (无背景)",
+    dailyLimitReached: "今日次数已用完 (3/3)",
+    remainingCredits: "剩余次数:",
     styles: {
       JAPANESE_SCHOOL: "日式校园",
       MEDIEVAL_FANTASY: "中世纪冒险",

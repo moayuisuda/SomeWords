@@ -12,10 +12,14 @@ export const saveImage = async (filename: string) => {
   }
 
   try {
+    // @ts-ignore - 'format' is supported in download options but missing in types
     await snapdom.download(element as HTMLElement, {
       filename: filename,
-      scale: 2, // Higher resolution
-      fast: true, // Skip small idle delays
+      // @ts-ignore
+      format: 'jpg', // Change to JPG for smaller file size
+      // quality: 0.9,  // Slightly reduce quality for better compression
+      scale: 2,    // Reduce scale from 2 to 1.5
+      fast: true,    // Skip small idle delays
       embedFonts: true // Ensure web fonts are embedded
     });
   } catch (error) {

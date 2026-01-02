@@ -21,6 +21,7 @@ import {
   CameraIcon,
   Bars3Icon,
 } from "@heroicons/react/20/solid";
+import { useDailyLimit } from "../hooks/useDailyLimit";
 
 const App: React.FC = () => {
   const [inputText, setInputText] = useState("");
@@ -35,6 +36,9 @@ const App: React.FC = () => {
   const [language, setLanguage] = useState<Language>("en");
   const [showSubtitles, setShowSubtitles] = useState(true);
   const [subtitleType, setSubtitleType] = useState<SubtitleType>("HORIZONTAL");
+
+  // Daily Limit Hook
+  const { remaining, isLimitReached, incrementUsage } = useDailyLimit();
 
   // Audio for button clicks (optional visual feedback, keeping it silent but visual)
   const [isAPressed, setIsAPressed] = useState(false);
@@ -56,6 +60,12 @@ const App: React.FC = () => {
       appState === AppState.GENERATING_IMAGE
     )
       return;
+
+    if (isLimitReached) {
+      setErrorMessage(t.dailyLimitReached);
+      setAppState(AppState.ERROR);
+      return;
+    }
 
     setIsAPressed(true);
     setTimeout(() => setIsAPressed(false), 200);
@@ -118,6 +128,7 @@ const App: React.FC = () => {
         sceneDescription: description,
       });
 
+      incrementUsage(); // Deduct credit
       setAppState(AppState.COMPLETE);
     } catch (err: any) {
       setAppState(AppState.ERROR);
@@ -134,9 +145,16 @@ const App: React.FC = () => {
     setInputText("");
   };
 
-  const handleSave = () => {
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSave = async () => {
     if (generatedScene) {
-      saveImage(`retro_scene_${Date.now()}`);
+      setIsSaving(true);
+      try {
+        await saveImage(`retro_scene_${Date.now()}`);
+      } finally {
+        setIsSaving(false);
+      }
     }
   };
 
@@ -155,6 +173,23 @@ const App: React.FC = () => {
 
       {/* Top Right Control Bar */}
       <div className="absolute top-4 right-4 z-50 flex items-center gap-3">
+        {/* Credits Display */}
+        <div className="hidden md:flex items-center gap-2 mr-2">
+          <span className={`text-white/60 text-[10px] md:text-xs ${pixelFont}`}>
+            {t.remainingCredits}
+          </span>
+          <div className="flex gap-1">
+            {[...Array(3)].map((_, i) => (
+              <div 
+                key={i} 
+                className={`w-2 h-2 md:w-3 md:h-3 rounded-full border border-white/30 ${
+                  i < remaining ? "bg-green-500 shadow-[0_0_5px_#22c55e]" : "bg-gray-800"
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+
         {/* Scene Controls - Only visible when a scene is generated */}
         {showSubtitles && (
           <div className="relative h-full flex items-center bg-black/50 border border-white/20 rounded px-2">
@@ -203,10 +238,17 @@ const App: React.FC = () => {
 
             <button
               onClick={handleSave}
-              className="bg-black/50 hover:bg-black/80 text-white/70 hover:text-white border border-white/20 p-2 rounded transition-colors"
+              disabled={isSaving}
+              className={`bg-black/50 hover:bg-black/80 text-white/70 hover:text-white border border-white/20 p-2 rounded transition-colors ${
+                isSaving ? "opacity-50 cursor-not-allowed" : ""
+              }`}
               title={t.save}
             >
-              <CameraIcon className="w-5 h-5" />
+              {isSaving ? (
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              ) : (
+                <CameraIcon className="w-5 h-5" />
+              )}
             </button>
 
             {/* Divider */}
