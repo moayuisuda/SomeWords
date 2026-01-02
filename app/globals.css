@@ -92,7 +92,7 @@ body {
 }
 
 .animate-waiting {
-  /* animation: waiting 1.5s step-end infinite; */
+  animation: waiting 2s step-end infinite;
 }
 
 .main-content {
