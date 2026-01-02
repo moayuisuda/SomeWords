@@ -1,8 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 import { NextResponse } from "next/server";
 import { SceneStyle } from "../../../types";
-import fs from 'fs';
-import path from 'path';
 
 const apiKey = process.env.GEMINI_API_KEY || '';
 const ai = new GoogleGenAI({ apiKey });
@@ -82,22 +80,13 @@ export async function POST(request: Request) {
         // Optimization: Save Base64 to local file system to avoid large JSON payloads
         // Note: In production (e.g. Vercel), this should upload to Blob Storage (S3, Vercel Blob) instead.
         const base64Data = part.inlineData.data;
-        const buffer = Buffer.from(base64Data, 'base64');
         
-        const publicDir = path.join(process.cwd(), 'public');
-        const generatedDir = path.join(publicDir, 'generated');
+        // Fix for Read-Only File System (Serverless/Vercel):
+        // We cannot write to the local filesystem (except /tmp, which is not accessible publicly).
+        // Returning Base64 Data URL allows the frontend to display the image immediately.
+        // For production apps, consider uploading 'buffer' to S3 or Vercel Blob.
+        const imageUrl = `data:image/png;base64,${base64Data}`;
         
-        // Ensure directory exists
-        if (!fs.existsSync(generatedDir)) {
-          fs.mkdirSync(generatedDir, { recursive: true });
-        }
-        
-        const filename = `scene_${Date.now()}_${Math.random().toString(36).substring(2, 9)}.png`;
-        const filePath = path.join(generatedDir, filename);
-        
-        fs.writeFileSync(filePath, buffer);
-        
-        const imageUrl = `/generated/${filename}`;
         return NextResponse.json({ imageUrl });
       }
     }
