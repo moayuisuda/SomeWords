@@ -32,7 +32,7 @@ interface TranslationSet {
 
 export const translations: Record<Language, TranslationSet> = {
   en: {
-    subtitleStyle: "SUBTITLE STYLE",
+    subtitleStyle: "TEXT STYLE",
     insertCoin: "INSERT COIN",
     enterDialogue: "PLEASE ENTER DIALOGUE BELOW",
     controls: "CONTROLS",
