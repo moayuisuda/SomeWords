@@ -37,7 +37,7 @@ export const translations: Record<Language, TranslationSet> = {
     controls: "CONTROLS",
     start: "START",
     select: "SELECT",
-    generate: "GENERATE",
+    generate: "START",
     reset: "RESET",
     gameStyle: "GAME STYLE",
     dialogue: "DIALOGUE",

@@ -2,7 +2,6 @@
 
 import React, { useState, useCallback } from "react";
 import CRTOverlay from "../components/CRTOverlay";
-import DialogBox from "../components/DialogBox";
 import RetroButton from "../components/RetroButton";
 import { saveImage } from "../utils/imageSaver";
 import {
@@ -19,7 +18,6 @@ import {
   EyeIcon,
   EyeSlashIcon,
   CameraIcon,
-  Bars3Icon,
 } from "@heroicons/react/20/solid";
 import { useDailyLimit } from "../hooks/useDailyLimit";
 
@@ -38,7 +36,7 @@ const App: React.FC = () => {
   const [subtitleType, setSubtitleType] = useState<SubtitleType>("HORIZONTAL");
 
   // Daily Limit Hook
-  const { remaining, isLimitReached, incrementUsage } = useDailyLimit();
+  const { isLimitReached, incrementUsage } = useDailyLimit();
 
   // Audio for button clicks (optional visual feedback, keeping it silent but visual)
   const [isAPressed, setIsAPressed] = useState(false);
@@ -162,6 +160,23 @@ const App: React.FC = () => {
     setLanguage((prev) => (prev === "en" ? "zh" : "en"));
   };
 
+  const cycleSubtitleStyle = () => {
+    setSubtitleType((prev) => {
+      switch (prev) {
+        case "HORIZONTAL":
+          return "HORIZONTAL_NO_BG";
+        case "HORIZONTAL_NO_BG":
+          return "VERTICAL_LEFT";
+        case "VERTICAL_LEFT":
+          return "VERTICAL_LEFT_NO_BG";
+        case "VERTICAL_LEFT_NO_BG":
+          return "HORIZONTAL";
+        default:
+          return "HORIZONTAL";
+      }
+    });
+  };
+
   const isLoading =
     appState === AppState.GENERATING_PROMPT ||
     appState === AppState.GENERATING_IMAGE;
@@ -170,100 +185,6 @@ const App: React.FC = () => {
     <div className="min-h-screen bg-[#1a1a1a] flex flex-col items-center justify-center p-2 md:p-6 font-sans overflow-x-hidden relative">
       {/* Background pattern */}
       <div className="absolute inset-0 opacity-5 pointer-events-none bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-gray-700 via-gray-900 to-black"></div>
-
-      {/* Top Right Control Bar */}
-      <div className="absolute top-4 right-4 z-50 flex items-center gap-3">
-        {/* Credits Display */}
-        {/* <div className="hidden md:flex items-center gap-2 mr-2">
-          <span className={`text-white/60 text-[10px] md:text-xs ${pixelFont}`}>
-            {t.remainingCredits}
-          </span>
-          <div className="flex gap-1">
-            {[...Array(3)].map((_, i) => (
-              <div 
-                key={i} 
-                className={`w-2 h-2 md:w-3 md:h-3 rounded-full border border-white/30 ${
-                  i < remaining ? "bg-green-500 shadow-[0_0_5px_#22c55e]" : "bg-gray-800"
-                }`}
-              />
-            ))}
-          </div>
-        </div> */}
-
-        {/* Scene Controls - Only visible when a scene is generated */}
-        {showSubtitles && (
-          <div className="relative h-full flex items-center bg-black/50 border border-white/20 rounded px-2">
-            <Bars3Icon
-              className={`w-4 h-4 text-white/70 absolute left-2 pointer-events-none ${
-                subtitleType === "VERTICAL_LEFT" ? "rotate-90" : ""
-              } transition-transform`}
-            />
-            <select
-              value={subtitleType}
-              onChange={(e) => setSubtitleType(e.target.value as SubtitleType)}
-              className="appearance-none bg-transparent text-white/90 text-xs font-['DotGothic16'] pl-6 pr-2 py-1 focus:outline-none cursor-pointer"
-            >
-              <option value="HORIZONTAL" className="bg-black text-white">
-                {t.horizontalText}
-              </option>
-              <option value="HORIZONTAL_NO_BG" className="bg-black text-white">
-                {t.horizontalNoBg}
-              </option>
-              <option value="VERTICAL_LEFT" className="bg-black text-white">
-                {t.verticalText}
-              </option>
-              <option
-                value="VERTICAL_LEFT_NO_BG"
-                className="bg-black text-white"
-              >
-                {t.verticalNoBg}
-              </option>
-            </select>
-          </div>
-        )}
-        
-        {appState === AppState.COMPLETE && (
-          <>
-            <button
-              onClick={() => setShowSubtitles(!showSubtitles)}
-              className="bg-black/50 hover:bg-black/80 text-white/70 hover:text-white border border-white/20 p-2 rounded transition-colors"
-              title={showSubtitles ? t.hideText : t.showText}
-            >
-              {showSubtitles ? (
-                <EyeIcon className="w-5 h-5" />
-              ) : (
-                <EyeSlashIcon className="w-5 h-5" />
-              )}
-            </button>
-
-            <button
-              onClick={handleSave}
-              disabled={isSaving}
-              className={`bg-black/50 hover:bg-black/80 text-white/70 hover:text-white border border-white/20 p-2 rounded transition-colors ${
-                isSaving ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-              title={t.save}
-            >
-              {isSaving ? (
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-              ) : (
-                <CameraIcon className="w-5 h-5" />
-              )}
-            </button>
-
-            {/* Divider */}
-            <div className="w-px h-6 bg-white/20 mx-1"></div>
-          </>
-        )}
-
-        {/* Language Switcher */}
-        <button
-          onClick={toggleLanguage}
-          className="bg-black/50 hover:bg-black/80 text-white/70 hover:text-white border border-white/20 px-3 py-1.5 rounded text-xs font-['DotGothic16'] h-full tracking-wider"
-        >
-          {language === "en" ? "ENGLISH" : "中文"}
-        </button>
-      </div>
 
       {/* --- TV UNIT --- */}
       {/* Increased max-width to 4xl and adjusted aspect ratio handling */}
@@ -497,38 +418,27 @@ const App: React.FC = () => {
               <div className="flex gap-4 md:gap-8">
                 <div className="flex flex-col items-center">
                   <button
-                    onClick={handleReset}
+                    onClick={cycleSubtitleStyle}
                     className="active:translate-y-[2px] active:shadow-none transition-all w-16 md:w-20 h-4 md:h-6 bg-[#1a1a1a] rounded-full shadow-[0_4px_0_rgba(0,0,0,0.5)] border border-white/5"
                   ></button>
                   <div className="flex flex-col items-center mt-1 md:mt-2">
                     <span
                       className={`text-[#8b1f26] font-bold tracking-widest text-[8px] md:text-[10px] ${headerFont}`}
                     >
-                      {t.select}
-                    </span>
-                    <span
-                      className={`text-[#8b1f26] opacity-80 font-bold tracking-tight text-[8px] md:text-[10px] ${pixelFont}`}
-                    >
-                      ({t.reset})
+                      STYLE
                     </span>
                   </div>
                 </div>
                 <div className="flex flex-col items-center">
                   <button
-                    onClick={handleGenerate}
-                    disabled={isLoading}
+                    onClick={toggleLanguage}
                     className="active:translate-y-[2px] active:shadow-none transition-all w-16 md:w-20 h-4 md:h-6 bg-[#1a1a1a] rounded-full shadow-[0_4px_0_rgba(0,0,0,0.5)] border border-white/5"
                   ></button>
                   <div className="flex flex-col items-center mt-1 md:mt-2">
                     <span
                       className={`text-[#8b1f26] font-bold tracking-widest text-[8px] md:text-[10px] ${headerFont}`}
                     >
-                      {t.start}
-                    </span>
-                    <span
-                      className={`text-[#8b1f26] opacity-80 font-bold tracking-tight text-[8px] md:text-[10px] ${pixelFont}`}
-                    >
-                      ({t.generate})
+                      LANGUAGE
                     </span>
                   </div>
                 </div>
@@ -536,7 +446,7 @@ const App: React.FC = () => {
             </div>
 
             {/* Right: A/B Buttons */}
-            <div className="flex gap-4 items-end pb-1 md:pb-4 ml-0 md:ml-4 justify-center md:justify-start mt-2 md:mt-0">
+            <div className="flex gap-4 items-end pb-1 md:pb-4 ml-0 md:ml-4 justify-center md:justify-start">
               {/* B Button (Reset) */}
               <div className="flex flex-col items-center relative top-2 md:top-4">
                 <button
@@ -553,12 +463,7 @@ const App: React.FC = () => {
                   <span
                     className={`text-[#8b1f26] font-bold text-[10px] md:text-[12px] ${headerFont}`}
                   >
-                    B
-                  </span>
-                  <span
-                    className={`text-[#8b1f26] opacity-80 font-bold -mt-0.5 text-[8px] md:text-[10px] ${pixelFont}`}
-                  >
-                    ({t.reset})
+                    {t.reset}
                   </span>
                 </div>
               </div>
@@ -581,14 +486,38 @@ const App: React.FC = () => {
                   <span
                     className={`text-[#8b1f26] font-bold text-[10px] md:text-[12px] ${headerFont}`}
                   >
-                    A
-                  </span>
-                  <span
-                    className={`text-[#8b1f26] opacity-80 font-bold -mt-0.5 text-[8px] md:text-[10px] ${pixelFont}`}
-                  >
-                    ({t.generate})
+                    {t.generate}
                   </span>
                 </div>
+              </div>
+
+              {/* Extra Controls: Screenshot & Subtitles */}
+              <div className="flex flex-col gap-3 ml-4 md:ml-4 mb-2">
+                <button
+                  onClick={handleSave}
+                  disabled={isSaving}
+                  className={`w-10 md:w-12 h-8 md:h-10 bg-[#1a1a1a] rounded-lg border border-white/10 shadow-[0_2px_0_rgba(0,0,0,0.5)] active:translate-y-[1px] active:shadow-none flex items-center justify-center text-white/60 hover:text-white/90 transition-all ${
+                    isSaving ? "opacity-50" : ""
+                  }`}
+                  title={t.save}
+                >
+                  {isSaving ? (
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  ) : (
+                    <CameraIcon className="w-4 h-4 md:w-5 md:h-5" />
+                  )}
+                </button>
+                <button
+                  onClick={() => setShowSubtitles(!showSubtitles)}
+                  className="w-10 md:w-12 h-8 md:h-10 bg-[#1a1a1a] rounded-lg border border-white/10 shadow-[0_2px_0_rgba(0,0,0,0.5)] active:translate-y-[1px] active:shadow-none flex items-center justify-center text-white/60 hover:text-white/90 transition-all"
+                  title={showSubtitles ? t.hideText : t.showText}
+                >
+                  {showSubtitles ? (
+                    <EyeIcon className="w-4 h-4 md:w-5 md:h-5" />
+                  ) : (
+                    <EyeSlashIcon className="w-4 h-4 md:w-5 md:h-5" />
+                  )}
+                </button>
               </div>
             </div>
           </div>
