@@ -1,5 +1,5 @@
 {
-  "name": "RetroScene Gen",
-  "description": "An 8-bit Famicom/NES style scene generator. Enter text, and AI creates a pixel-art game scene with your dialogue.",
+  "name": "SomeWords",
+  "description": "8-bit Famicom/NES style scene generator, pixel-art game scene",
   "requestFramePermissions": []
 }

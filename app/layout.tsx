@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "RetroScene Gen",
-  description: "Generate retro 8-bit game scenes",
+  title: "SomeWords",
+  description: "8-bit Famicom/NES style scene generator, pixel-art game scene",
 };
 
 export default function RootLayout({
