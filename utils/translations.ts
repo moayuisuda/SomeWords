@@ -1,5 +1,4 @@
-
-import { Language, SceneStyle } from '../types';
+import { Language, SceneStyle } from "../types";
 
 interface TranslationSet {
   insertCoin: string;
@@ -16,6 +15,7 @@ interface TranslationSet {
   systemError: string;
   resetSystem: string;
   saveToDisk: string;
+  subtitleStyle: string;
   imgOnly: string;
   withText: string;
   hideText: string;
@@ -27,11 +27,12 @@ interface TranslationSet {
   verticalNoBg: string;
   dailyLimitReached: string;
   remainingCredits: string;
-  styles: Record<SceneStyle | 'RANDOM', string>;
+  styles: Record<SceneStyle | "RANDOM", string>;
 }
 
 export const translations: Record<Language, TranslationSet> = {
   en: {
+    subtitleStyle: "SUBTITLE STYLE",
     insertCoin: "INSERT COIN",
     enterDialogue: "PLEASE ENTER DIALOGUE BELOW",
     controls: "CONTROLS",
@@ -62,8 +63,8 @@ export const translations: Record<Language, TranslationSet> = {
       MEDIEVAL_FANTASY: "Medieval Fantasy",
       MILLENNIUM_CITY: "Millennium City",
       CASSETTE_FUTURISM: "Cassette Futurism",
-      RANDOM: "Random Style"
-    }
+      RANDOM: "Random Style",
+    },
   },
   zh: {
     insertCoin: "投入代币",
@@ -72,6 +73,7 @@ export const translations: Record<Language, TranslationSet> = {
     start: "开始",
     select: "选择",
     generate: "生成",
+    subtitleStyle: "字幕风格",
     reset: "重置",
     gameStyle: "游戏风格",
     dialogue: "剧情文本",
@@ -96,7 +98,7 @@ export const translations: Record<Language, TranslationSet> = {
       MEDIEVAL_FANTASY: "中世纪冒险",
       MILLENNIUM_CITY: "千禧年都市",
       CASSETTE_FUTURISM: "磁带未来主义",
-      RANDOM: "随机风格"
-    }
-  }
+      RANDOM: "随机风格",
+    },
+  },
 };

@@ -248,7 +248,7 @@ const App: React.FC = () => {
                         className={`${pixelFont} text-xs md:text-sm text-gray-300`}
                       >
                         <span className="text-red-500 font-bold">
-                          SELECT / B
+                          RESET / B
                         </span>{" "}
                         : {t.reset}
                       </p>
@@ -425,7 +425,7 @@ const App: React.FC = () => {
                     <span
                       className={`text-[#8b1f26] font-bold tracking-widest text-[8px] md:text-[10px] ${headerFont}`}
                     >
-                      STYLE
+                      {t.subtitleStyle}
                     </span>
                   </div>
                 </div>
