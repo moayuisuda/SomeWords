@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 
 const STORAGE_KEY = 'retro_vision_daily_limit';
-const DAILY_MAX = 3;
+const DAILY_MAX = 10;
 
 interface DailyLimitState {
   count: number;
